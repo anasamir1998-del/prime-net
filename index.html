@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>شركة PING NET لتقنية المعلومات | حلول رقمية متكاملة</title>
+    <title>شركة PRIME NET لتقنية المعلومات | حلول رقمية متكاملة</title>
     <link rel="stylesheet" href="css/style.css?v=15">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&amp;display=swap"
@@ -16,7 +16,7 @@
         <div class="container">
             <div class="logo">
                 <a href="index.html">
-                    <img src="img/logo.png" alt="PING NET" class="logo-img">
+                    <img src="img/logo.png" alt="PRIME NET" class="logo-img">
                 </a>
             </div>
             <nav>
@@ -56,7 +56,7 @@
             <h2 class="section-title hidden-element show-element">فريقنا ومهمتنا</h2>
 
             <div class="about-text-full hidden-element show-element">
-                <p>شركة "PING NET" هي شريكك الاستراتيجي في عالم التقنية. نؤمن بأن التكنولوجيا ليست مجرد أدوات، بل هي
+                <p>شركة "PRIME NET" هي شريكك الاستراتيجي في عالم التقنية. نؤمن بأن التكنولوجيا ليست مجرد أدوات، بل هي
                     المحرك الأساسي لنجاح أي مشروع في العصر الحديث.</p>
             </div>
 
@@ -347,7 +347,7 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-logo">
-                    <h2>PING NET</h2>
+                    <h2>PRIME NET</h2>
                     <p>شريكك الأول في الحلول التقنية المبتكرة.</p>
                 </div>
                 <div class="social-links">
@@ -357,7 +357,7 @@
                 </div>
             </div>
             <div class="copyright">
-                <p>© 2026 شركة PING NET. جميع الحقوق محفوظة. | تصميم وتطوير المهندس <span id="adminTrigger"
+                <p>© 2026 شركة PRIME NET. جميع الحقوق محفوظة. | تصميم وتطوير المهندس <span id="adminTrigger"
                         style="cursor: pointer; color: inherit;">سمير</span> محمد كمال</p>
             </div>
         </div>
@@ -365,9 +365,77 @@
 
     <!-- Preloader -->
     <div id="preloader">
-        <div class="loader-content">
-            <img src="img/logo.png" alt="PING NET Logo" class="loader-logo">
-            <div class="loader-circle"></div>
+        <div class="logo-container">
+            <!-- رسم الشعار بصيغة SVG ليتطابق مع الصورة -->
+            <svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <!-- تدرجات لونية مشابهة للصورة -->
+                    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#00f3ff"/>
+                        <stop offset="100%" stop-color="#0088ff"/>
+                    </linearGradient>
+                    <linearGradient id="blueGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#0055ff"/>
+                        <stop offset="100%" stop-color="#00f3ff"/>
+                    </linearGradient>
+                </defs>
+
+                <g class="glow-wrapper">
+                    <!-- ================= مسارات الشبكة (Circuit Lines) ================= -->
+                    
+                    <!-- المجموعة اليسرى (Cyan) -->
+                    <g stroke="url(#cyanGrad)">
+                        <path class="circuit-path" d="M 220 220 L 290 220 L 290 240 L 350 240" />
+                        <path class="circuit-path" d="M 240 235 L 305 235 L 305 260 L 360 260" />
+                        <path class="circuit-path" d="M 310 180 L 340 180 L 340 140 L 380 140" />
+                        <path class="circuit-path" d="M 320 160 L 330 160 L 330 110 L 350 110" />
+                    </g>
+
+                    <!-- المجموعة اليمنى (Blue/Cyan) -->
+                    <g stroke="url(#blueGrad)">
+                        <path class="circuit-path" d="M 590 180 L 520 180 L 520 160 L 460 160" />
+                        <path class="circuit-path" d="M 550 235 L 480 235 L 480 200 L 450 200" />
+                        <path class="circuit-path" d="M 500 250 L 470 250 L 470 270 L 440 270" />
+                    </g>
+
+                    <!-- المجموعة العمودية في المنتصف (Central Vertical Data Streams) -->
+                    <g stroke="url(#cyanGrad)">
+                        <path class="circuit-path" d="M 380 140 L 380 280" />
+                        <path class="circuit-path" d="M 395 120 L 395 260" />
+                        <path class="circuit-path" d="M 410 100 L 410 240" />
+                    </g>
+                    <g stroke="url(#blueGrad)">
+                        <path class="circuit-path" d="M 425 150 L 425 290" />
+                        <path class="circuit-path" d="M 440 130 L 440 270" />
+                        <path class="circuit-path" d="M 455 160 L 455 250" />
+                    </g>
+
+                    <!-- ================= النقاط (Nodes/Dots) ================= -->
+                    <circle class="node" cx="220" cy="220" r="5" fill="#070a13" stroke="#00f3ff" stroke-width="2"/>
+                    <circle class="node" cx="240" cy="235" r="4" fill="#070a13" stroke="#00f3ff" stroke-width="2"/>
+                    <circle class="node" cx="310" cy="180" r="5" fill="#070a13" stroke="#00f3ff" stroke-width="2"/>
+                    <circle class="node" cx="320" cy="160" r="4" fill="#070a13" stroke="#00f3ff" stroke-width="2"/>
+                    <circle class="node" cx="350" cy="110" r="4" fill="#070a13" stroke="#00f3ff" stroke-width="2"/>
+
+                    <circle class="node" cx="380" cy="280" r="4" fill="#070a13" stroke="#00f3ff" stroke-width="2"/>
+                    <circle class="node" cx="395" cy="120" r="4" fill="#070a13" stroke="#00f3ff" stroke-width="2"/>
+                    <circle class="node" cx="410" cy="100" r="5" fill="#070a13" stroke="#00f3ff" stroke-width="2"/>
+                    <circle class="node" cx="425" cy="290" r="5" fill="#070a13" stroke="#0055ff" stroke-width="2"/>
+                    <circle class="node" cx="440" cy="130" r="4" fill="#070a13" stroke="#0055ff" stroke-width="2"/>
+                    
+                    <circle class="node" cx="590" cy="180" r="5" fill="#070a13" stroke="#00f3ff" stroke-width="2"/>
+                    <circle class="node" cx="550" cy="235" r="5" fill="#070a13" stroke="#0055ff" stroke-width="2"/>
+                    <circle class="node" cx="500" cy="250" r="4" fill="#070a13" stroke="#0055ff" stroke-width="2"/>
+
+                    <!-- ================= النص (Typography) ================= -->
+                    <rect x="230" y="170" width="340" height="60" fill="transparent" rx="8"/>
+                    
+                    <text x="400" y="215" text-anchor="middle" font-size="56" class="logo-text">
+                        <tspan class="text-prime">PRIME</tspan>
+                        <tspan class="text-net" dx="10">NET</tspan>
+                    </text>
+                </g>
+            </svg>
         </div>
     </div>
 
@@ -388,14 +456,14 @@
         <div class="chat-header">
             <div class="chat-title">
                 <i class="fas fa-robot"></i>
-                <span>المساعد الذكي PING NET</span>
+                <span>المساعد الذكي PRIME NET</span>
             </div>
             <button class="close-chat" id="closeChat"><i class="fas fa-times"></i></button>
         </div>
         <div class="chat-body" id="chatBody">
             <div class="message bot">
                 <div class="message-content">
-                    مرحباً بك في PING NET 👋<br>أنا مساعدك الذكي، كيف يمكنني خدمتك اليوم؟
+                    مرحباً بك في PRIME NET 👋<br>أنا مساعدك الذكي، كيف يمكنني خدمتك اليوم؟
                 </div>
                 <div class="message-time">الآن</div>
             </div>
@@ -413,7 +481,7 @@
         <div class="custom-alert-box">
             <div class="custom-alert-icon">🚫</div>
             <div class="custom-alert-message">عذراً، هذا الإجراء غير مسموح به لحماية المحتوى 🚫</div>
-            <p style="color: #94a3b8;">حقوق الملكية محفوظة لـ PING NET</p>
+            <p style="color: #94a3b8;">حقوق الملكية محفوظة لـ PRIME NET</p>
         </div>
     </div>
 

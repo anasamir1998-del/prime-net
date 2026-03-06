@@ -81,12 +81,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // Navbar scroll effect
     window.addEventListener('scroll', () => {
         const header = document.querySelector('header');
+        const logo = document.querySelector('.logo-img');
         if (window.scrollY > 50) {
             header.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
-            header.style.padding = '10px 0';
+            header.style.padding = '5px 0';
+            if (logo) {
+                logo.style.height = '100px';
+                logo.style.width = '200px';
+            }
         } else {
             header.style.boxShadow = 'none';
-            header.style.padding = '15px 0';
+            header.style.padding = '10px 0';
+            if (logo) {
+                logo.style.height = '180px';
+                logo.style.width = '350px';
+            }
         }
     });
 });
@@ -189,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
             intent: 'greeting',
             keywords: ['مرحبا', 'هلا', 'اهلين', 'سلام', 'السلام عليكم', 'هاي', 'الو', 'مساء الخير', 'صباح الخير'],
             responses: [
-                'أهلاً بك في PING NET! 👋 كيف يمكنني مساعدتك اليوم؟',
+                'أهلاً بك في PRIME NET! 👋 كيف يمكنني مساعدتك اليوم؟',
                 'وعليكم السلام! نورتنا 🌹، تفضل بأي استفسار.',
                 'يا هلا! 🤩 أنا هنا لخدمتك، اطلب ما تشاء.'
             ]
@@ -207,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
             intent: 'services',
             keywords: ['خدمات', 'ايش تسوو', 'نشاط', 'عمل', 'ماذا تقدمون', 'انظمة', 'كاميرات', 'شبكات', 'سنترال', 'بصمة', 'صوتيات'],
             responses: [
-                'احنا في PING NET بتاع كله في التقنية! 😎\nنقدم:\n📹 كاميرات مراقبة\n🌐 شبكات وسنترالات\n🔐 أجهزة بصمة وتحكم\n🔊 أنظمة صوتية\n💻 تصميم مواقع وتطبيقات',
+                'احنا في PRIME NET بتاع كله في التقنية! 😎\nنقدم:\n📹 كاميرات مراقبة\n🌐 شبكات وسنترالات\n🔐 أجهزة بصمة وتحكم\n🔊 أنظمة صوتية\n💻 تصميم مواقع وتطبيقات',
                 'نقدر نخدمك في أي شيء يخص الـ Low Current Systems والبرمجة. 🛠️\nمن الكاميرات للشبكات وحتى تصميم موقعك الإلكتروني.',
                 'خدماتنا شاملة: توريد، تركيب، وضمان. ✅\nمتخصصين في الأنظمة الأمنية والشبكات وحلول الويب.'
             ]
@@ -243,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
             intent: 'who_are_you',
             keywords: ['مين انت', 'الروبوت', 'اسمك', 'عرفني بنفسك', 'ذكاء اصطناعي'],
             responses: [
-                'أنا المساعد الذكي الخاص بـ PING NET! 🤖\nمبرمج عشان أجاوبك بسرعة وأساعدك توصل للي تبيه.',
+                'أنا المساعد الذكي الخاص بـ PRIME NET! 🤖\nمبرمج عشان أجاوبك بسرعة وأساعدك توصل للي تبيه.',
                 'أنا زميلك الرقمي 👾\nلسه بتعلم، بس بحاول أكون مفيد قد ما أقدر!'
             ]
         },
@@ -367,7 +376,7 @@ const createCustomAlert = () => {
             <div class="custom-alert-box">
                 <div class="custom-alert-icon">🚫</div>
                 <div class="custom-alert-message">عذراً، هذا الإجراء غير مسموح به لحماية المحتوى 🚫</div>
-                <p style="color: #94a3b8;">حقوق الملكية محفوظة لـ PING NET</p>
+                <p style="color: #94a3b8;">حقوق الملكية محفوظة لـ PRIME NET</p>
             </div>
         </div>
     `;
@@ -384,7 +393,7 @@ const createCustomAlert = () => {
 
         // Clear clipboard
         if (navigator.clipboard) {
-            navigator.clipboard.writeText('حقوق الملكية محفوظة لـ PING NET - ممنوع النسخ');
+            navigator.clipboard.writeText('حقوق الملكية محفوظة لـ PRIME NET - ممنوع النسخ');
         }
 
         // Hide alert after 3 seconds
@@ -495,7 +504,7 @@ window.addEventListener('load', () => {
             setTimeout(() => {
                 preloader.style.display = 'none';
             }, 500);
-        }, 1500); // Minimum 1.5s display time
+        }, 4500); // Minimum 4.5s display time for full animation
     }
 });
 
@@ -539,7 +548,7 @@ if (typewriterElement) {
     }
 
     // Start typing after preloader
-    setTimeout(type, 2000);
+    setTimeout(type, 5000);
 }
 
 // Back to Top Logic
@@ -560,10 +569,10 @@ if (backToTopBtn) {
 
 (function () {
     // 1. Configuration
-    const ADMIN_PASSWORD = 'pingnet2026';
+    const ADMIN_PASSWORD = '3798';
     const GITHUB_CONFIG = {
         owner: 'anasamir1998-del',
-        repo: 'pingnet',
+        repo: 'primenet',
         path: 'index.html'
     };
 
@@ -644,7 +653,7 @@ if (backToTopBtn) {
                 document.getElementById('adminLoginModal').classList.remove('active');
                 document.getElementById('editorToolbar').classList.add('active');
                 alert('تم تسجيل الدخول بنجاح! يمكنك الآن تفعيل وضع التحرير.');
-                localStorage.setItem('pingnet_admin', 'true');
+                localStorage.setItem('primenet_admin', 'true');
             } else {
                 alert('كلمة المرور غير صحيحة!');
             }
@@ -666,10 +675,10 @@ if (backToTopBtn) {
             isLoggedIn = false;
             disableEditMode();
             document.getElementById('editorToolbar').classList.remove('active');
-            localStorage.removeItem('pingnet_admin');
+            localStorage.removeItem('primenet_admin');
         });
 
-        if (localStorage.getItem('pingnet_admin') === 'true') {
+        if (localStorage.getItem('primenet_admin') === 'true') {
             isLoggedIn = true;
             document.getElementById('editorToolbar').classList.add('active');
         }
@@ -838,7 +847,7 @@ if (backToTopBtn) {
             if (choice) {
                 await updateFileOnGitHub(htmlContent);
             } else {
-                localStorage.setItem('pingnet_saved_content', htmlContent);
+                localStorage.setItem('primenet_saved_content', htmlContent);
                 alert('تم الحفظ محلياً في المتصفح فقط.');
             }
         });
@@ -875,7 +884,7 @@ if (backToTopBtn) {
 
     // 6. Persistence Loader
     const loadSavedContent = () => {
-        const saved = localStorage.getItem('pingnet_saved_content');
+        const saved = localStorage.getItem('primenet_saved_content');
         if (saved) {
             // We need to be careful not to overwrite the editor UI if it was already injected
             // Best way: check if admin UI exists after loading
@@ -887,7 +896,7 @@ if (backToTopBtn) {
     // Initialize
     document.addEventListener('DOMContentLoaded', () => {
         // Only load saved content if it exists
-        const saved = localStorage.getItem('pingnet_saved_content');
+        const saved = localStorage.getItem('primenet_saved_content');
         if (saved) {
             // This is tricky because we might lose event listeners.
             // For a simple static site, it works for text/images.
