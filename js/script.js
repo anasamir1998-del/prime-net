@@ -132,10 +132,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         }, 300);
                     }
                 });
-                
+
                 // Refresh AOS after DOM changes
                 setTimeout(() => {
-                    if(typeof AOS !== 'undefined') AOS.refresh();
+                    if (typeof AOS !== 'undefined') AOS.refresh();
                 }, 350);
             });
         });
@@ -319,7 +319,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Google Gemini API Configuration (To make it smart, add your key here)
-    const GEMINI_API_KEY = ''; // ضَع مفتاح الـ API الخاص بـ Gemini هنا بين علامات التنصيص
+    const GEMINI_API_KEY = 'AIzaSyD0ZPyUT_bw1XQjyRgsDk-VUv1ahU1wB2o'; // ضَع مفتاح الـ API الخاص بـ Gemini هنا بين علامات التنصيص
     let chatHistory = [];
 
     const callGeminiAPI = async (message) => {
@@ -348,11 +348,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) throw new Error('API Error');
             const data = await response.json();
             const reply = data.candidates[0].content.parts[0].text;
-            
+
             chatHistory.push({ role: 'user', text: message });
             chatHistory.push({ role: 'bot', text: reply });
             if (chatHistory.length > 10) chatHistory = chatHistory.slice(chatHistory.length - 10);
-            
+
             // Convert simple markdown (**bold**) to HTML for nice rendering
             return reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         } catch (error) {
@@ -415,7 +415,7 @@ document.addEventListener('DOMContentLoaded', () => {
         chatBody.scrollTop = chatBody.scrollHeight;
 
         let responseText = '';
-        
+
         // If Gemini API Key is provided, use it, otherwise fall back to local responses
         if (GEMINI_API_KEY && GEMINI_API_KEY.trim() !== '') {
             responseText = await callGeminiAPI(text);
@@ -441,7 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
             chip.addEventListener('click', () => {
                 chatInput.value = chip.textContent;
                 handleUserMessage();
-                
+
                 // Hide chips after first use to clean up chat
                 const chipsContainer = document.querySelector('.chat-chips');
                 if (chipsContainer) {
@@ -1027,7 +1027,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 4. Note: The form will continue its submission to Formspree 
             // set in the 'action' attribute of the HTML form.
-            });
+        });
     }
 });
 
