@@ -339,13 +339,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    system_instruction: { parts: [{ text: systemInstruction }] },
+                    systemInstruction: { parts: [{ text: systemInstruction }] },
                     contents: contents,
                     generationConfig: { temperature: 0.7, maxOutputTokens: 250 }
                 })
             });
 
-            if (!response.ok) throw new Error('API Error');
+            if (!response.ok) {
+                const errData = await response.json();
+                console.error("Gemini API Error Details:", JSON.stringify(errData, null, 2));
+                throw new Error('API Error');
+            }
             const data = await response.json();
             const reply = data.candidates[0].content.parts[0].text;
 
