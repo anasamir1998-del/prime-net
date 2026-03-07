@@ -100,26 +100,46 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Safe Scroll Animation
-// We only add the hidden class if JS is running, effectively progressive enhancement.
-const animatedElements = document.querySelectorAll('.about-card, .service-card, .project-card, .section-title, .about-text-full');
+// Element Animations are now handled by AOS in index.html
 
-const observerOptions = {
-    threshold: 0.15
-};
+// Portfolio Filtering
+document.addEventListener('DOMContentLoaded', () => {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const projectCards = document.querySelectorAll('.project-card');
 
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('show-element');
-            observer.unobserve(entry.target);
-        }
-    });
-}, observerOptions);
+    if (filterBtns.length > 0 && projectCards.length > 0) {
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all
+                filterBtns.forEach(b => b.classList.remove('active'));
+                // Set active to clicked
+                btn.classList.add('active');
 
-animatedElements.forEach(el => {
-    el.classList.add('hidden-element'); // Hide only when JS is ready
-    observer.observe(el);
+                const filterValue = btn.getAttribute('data-filter');
+
+                projectCards.forEach(card => {
+                    if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
+                        card.style.display = 'block';
+                        setTimeout(() => {
+                            card.style.opacity = '1';
+                            card.style.transform = 'scale(1)';
+                        }, 50);
+                    } else {
+                        card.style.opacity = '0';
+                        card.style.transform = 'scale(0.8)';
+                        setTimeout(() => {
+                            card.style.display = 'none';
+                        }, 300);
+                    }
+                });
+                
+                // Refresh AOS after DOM changes
+                setTimeout(() => {
+                    if(typeof AOS !== 'undefined') AOS.refresh();
+                }, 350);
+            });
+        });
+    }
 });
 
 // Stats Counter Animation
@@ -298,6 +318,50 @@ document.addEventListener('DOMContentLoaded', () => {
         return (longerLength - levenshtein(longer, shorter)) / longerLength;
     };
 
+    // Google Gemini API Configuration (To make it smart, add your key here)
+    const GEMINI_API_KEY = ''; // ضَع مفتاح الـ API الخاص بـ Gemini هنا بين علامات التنصيص
+    let chatHistory = [];
+
+    const callGeminiAPI = async (message) => {
+        try {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+            const systemInstruction = `أنت مساعد ذكي لشركة PRIME NET (برايم نت) لتقنية المعلومات والأنظمة الأمنية في السعودية.
+خدماتنا تشمل: تركيب كاميرات مراقبة، أجهزة شبكات وسيرفرات، بوابات تحكم بالدخول، أجهزة حضور وانصراف (بصمة)، سنترالات وإنتركم، وأنظمة صوتية.
+أجب باختصار وبطريقة احترافية وودودة باللغة العربية. إذا سألك أحد عن الأسعار، أخبره أن الأسعار تعتمد على المعاينة والمتطلبات واطلب منه تعبئة نموذج طلب عرض السعر أو الاستشارة في الموقع.`;
+
+            const contents = chatHistory.map(msg => ({
+                role: msg.role === 'user' ? 'user' : 'model',
+                parts: [{ text: msg.text }]
+            }));
+            contents.push({ role: 'user', parts: [{ text: message }] });
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    system_instruction: { parts: [{ text: systemInstruction }] },
+                    contents: contents,
+                    generationConfig: { temperature: 0.7, maxOutputTokens: 250 }
+                })
+            });
+
+            if (!response.ok) throw new Error('API Error');
+            const data = await response.json();
+            const reply = data.candidates[0].content.parts[0].text;
+            
+            chatHistory.push({ role: 'user', text: message });
+            chatHistory.push({ role: 'bot', text: reply });
+            if (chatHistory.length > 10) chatHistory = chatHistory.slice(chatHistory.length - 10);
+            
+            // Convert simple markdown (**bold**) to HTML for nice rendering
+            return reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        } catch (error) {
+            console.error('Gemini Error:', error);
+            // Fallback to local rules if API fails
+            return getAIResponse(message);
+        }
+    };
+
     const getAIResponse = (input) => {
         const text = input.toLowerCase().trim();
         let bestIntent = null;
@@ -336,7 +400,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return 'عذراً، ما فهمت عليك بالضبط 🤔\nممكن توضح أكثر؟ أو تختار من القائمة:\n\n1️⃣ خدماتنا\n2️⃣ الأسعار\n3️⃣ التواصل';
     }
 
-    const handleUserMessage = () => {
+    const handleUserMessage = async () => {
         const text = chatInput.value.trim();
         if (!text) return;
 
@@ -350,17 +414,40 @@ document.addEventListener('DOMContentLoaded', () => {
         chatBody.appendChild(loadingDiv);
         chatBody.scrollTop = chatBody.scrollHeight;
 
-        setTimeout(() => {
-            loadingDiv.remove();
-            const response = getAIResponse(text);
-            addMessage(response, 'bot');
-        }, 1000);
+        let responseText = '';
+        
+        // If Gemini API Key is provided, use it, otherwise fall back to local responses
+        if (GEMINI_API_KEY && GEMINI_API_KEY.trim() !== '') {
+            responseText = await callGeminiAPI(text);
+        } else {
+            // Simulate network delay for local responses
+            await new Promise(resolve => setTimeout(resolve, 800));
+            responseText = getAIResponse(text);
+        }
+
+        loadingDiv.remove();
+        addMessage(responseText, 'bot');
     }
 
     if (sendMessage && chatInput) {
         sendMessage.addEventListener('click', handleUserMessage);
         chatInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') handleUserMessage();
+        });
+
+        // Chat Chips Logic
+        const chatChips = document.querySelectorAll('.chat-chip');
+        chatChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                chatInput.value = chip.textContent;
+                handleUserMessage();
+                
+                // Hide chips after first use to clean up chat
+                const chipsContainer = document.querySelector('.chat-chips');
+                if (chipsContainer) {
+                    chipsContainer.style.display = 'none';
+                }
+            });
         });
     }
 });
@@ -940,7 +1027,62 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 4. Note: The form will continue its submission to Formspree 
             // set in the 'action' attribute of the HTML form.
-            // If the user hasn't set a Form ID, it will show a Formspree error/setup page.
+            });
+    }
+});
+
+/* ==========================================================================
+   Quote Modal Logic
+   ========================================================================== */
+
+document.addEventListener('DOMContentLoaded', () => {
+    const openQuoteBtn = document.getElementById('openQuoteBtn');
+    const quoteModal = document.getElementById('quoteModal');
+    const closeQuoteBtn = document.querySelector('.close-quote-modal');
+    const quoteForm = document.getElementById('quoteForm');
+
+    if (openQuoteBtn && quoteModal && closeQuoteBtn) {
+        openQuoteBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            quoteModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+
+        closeQuoteBtn.addEventListener('click', () => {
+            quoteModal.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+
+        // Close on outside click
+        quoteModal.addEventListener('click', (e) => {
+            if (e.target === quoteModal) {
+                quoteModal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+    }
+
+    if (quoteForm) {
+        quoteForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('quoteName').value;
+            const phone = document.getElementById('quotePhone').value;
+            const service = document.getElementById('quoteService').options[document.getElementById('quoteService').selectedIndex].text;
+            const details = document.getElementById('quoteDetails').value;
+
+            const text = `*طلب عرض سعر جديد* \n\n` +
+                `*الاسم/الشركة:* ${name}\n` +
+                `*الجوال:* ${phone}\n` +
+                `*الخدمة:* ${service}\n` +
+                `*التفاصيل:* ${details || 'لا يوجد'}`;
+
+            const whatsappNumber = '966592973183';
+            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`;
+
+            window.open(whatsappUrl, '_blank');
+            quoteModal.classList.remove('active');
+            document.body.style.overflow = '';
+            quoteForm.reset();
         });
     }
 });

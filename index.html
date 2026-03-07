@@ -5,10 +5,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>شركة PRIME NET لتقنية المعلومات | حلول رقمية متكاملة</title>
-    <link rel="stylesheet" href="css/style.css?v=15">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="شركة PRIME NET هي شريكك الاستراتيجي في حلول الشبكات، كاميرات المراقبة، السنترالات، أجهزة البصمة، وتصميم المواقع بخبرة واحترافية عالية.">
+    <meta name="keywords" content="شبكات, كاميرات مراقبة, سنترالات, تقنية معلومات, تصميم مواقع, أجهزة بصمة, PRIME NET, السعودية, الرياض">
+    <meta name="author" content="المهندس سمير محمد كمال">
+    <meta name="theme-color" content="#0f172a">
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="شركة PRIME NET لتقنية المعلومات | حلول رقمية متكاملة">
+    <meta property="og:description" content="نبتكر المستقبل الرقمي لأعمالك. خبراء في كاميرات المراقبة، الشبكات، والأنظمة الأمنية وتطوير المواقع.">
+    <meta property="og:image" content="img/logo.png">
+    <meta property="og:url" content="https://primenet.netlify.app/"> <!-- مجرد مثال للرابط -->
+    <meta property="og:type" content="website">
+
+    <!-- CSS Links -->
+    <link rel="stylesheet" href="css/style.css?v=16">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&amp;display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&amp;display=swap" rel="stylesheet">
+    <!-- AOS Animation CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
 
 <body>
@@ -43,7 +59,7 @@
                 <p>بإشراف المهندس وهاج هزازي، نقدم أحدث الخدمات الرقمية وحلول تقنية المعلومات لتطوير أعمالكم ورفع
                     كفاءتها.</p>
                 <div class="buttons">
-                    <a href="#contact" class="btn btn-primary">اطلب استشارة مجانية</a>
+                    <button id="openQuoteBtn" class="btn btn-primary">اطلب استشارة مجانية</button>
                     <a href="#services" class="btn btn-secondary">تصفح خدماتنا</a>
                 </div>
             </div>
@@ -52,10 +68,10 @@
 
     <section id="about" class="about">
         <div class="container">
-            <div class="section-badge">من نحن</div>
-            <h2 class="section-title hidden-element show-element">فريقنا ومهمتنا</h2>
+            <div class="section-badge" data-aos="fade-up">من نحن</div>
+            <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">فريقنا ومهمتنا</h2>
 
-            <div class="about-text-full hidden-element show-element">
+            <div class="about-text-full" data-aos="fade-up" data-aos-delay="200">
                 <p>شركة "PRIME NET" هي شريكك الاستراتيجي في عالم التقنية. نؤمن بأن التكنولوجيا ليست مجرد أدوات، بل هي
                     المحرك الأساسي لنجاح أي مشروع في العصر الحديث.</p>
             </div>
@@ -65,7 +81,7 @@
                 <a href="https://wa.me/966534400932" target="_blank"
                     class="about-card team-card hidden-element show-element">
                     <div class="icon"><i class="fas fa-user-tie"></i></div>
-                    <h3>المهندس علي عبدالله بلغيث</h3>
+                    <h3>المهندس علي بلغيث</h3>
                     <p>مهندس متخصص في تقنية المعلومات، يقود فريقنا بخبرة واسعة وشغف للابتكار الرقمي.</p>
                 </a>
 
@@ -81,7 +97,7 @@
                 <a href="https://wa.me/966568400202" target="_blank"
                     class="about-card team-card hidden-element show-element">
                     <div class="icon"><i class="fas fa-laptop-code"></i></div>
-                    <h3>المهندس سمير محمد كمال</h3>
+                    <h3>المهندس سمير سليمان</h3>
                     <p>مهندس متخصص في تقنية المعلومات، يقود فريقنا بخبرة واسعة وشغف للابتكار الرقمي وتصميم وتطوير
                         المواقع والبرامج.</p>
                 </a>
@@ -100,36 +116,36 @@
     <section id="services" class="services">
         <div class="container">
             <div class="section-header">
-                <div class="section-badge">خدماتنا</div>
-                <h2 class="section-title hidden-element show-element">ماذا نقدم لكم؟</h2>
+                <div class="section-badge" data-aos="fade-up">خدماتنا</div>
+                <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">ماذا نقدم لكم؟</h2>
             </div>
             <div class="services-grid">
-                <div class="service-card hidden-element show-element">
+                <div class="service-card" data-aos="fade-up" data-aos-delay="200">
                     <i class="fas fa-laptop-code"></i>
                     <h3>تصميم وتطوير المواقع</h3>
                     <p>مواقع عصرية، سريعة، ومتجاوبة مع جميع الأجهزة لتعزيز تواجدكم الرقمي.</p>
                 </div>
-                <div class="service-card hidden-element show-element">
+                <div class="service-card" data-aos="fade-up" data-aos-delay="300">
                     <i class="fas fa-network-wired"></i>
                     <h3>حلول الشبكات والأنظمة</h3>
                     <p>بناء وتأسيس شبكات آمنة ومستقرة لضمان تدفق البيانات بكفاءة داخل منشأتك.</p>
                 </div>
-                <div class="service-card hidden-element show-element">
+                <div class="service-card" data-aos="fade-up" data-aos-delay="400">
                     <i class="fas fa-shield-alt"></i>
                     <h3>الأمن السيبراني</h3>
                     <p>تأمين بيانات مؤسستك ضد الهجمات الإلكترونية وضمان استمرارية الأعمال.</p>
                 </div>
-                <div class="service-card hidden-element show-element">
+                <div class="service-card" data-aos="fade-up" data-aos-delay="500">
                     <i class="fas fa-video"></i>
                     <h3>تركيب وتمديد جميع أنواع الكاميرات</h3>
                     <p>توريد وتركيب أحدث أنظمة المراقبة الأمنية وكاميرات IP و Analog بدقة عالية.</p>
                 </div>
-                <div class="service-card hidden-element show-element">
+                <div class="service-card" data-aos="fade-up" data-aos-delay="600">
                     <i class="fas fa-headset"></i>
                     <h3>الاستشارات والدعم التقني</h3>
                     <p>استشارات متخصصة لمساعدتك في اتخاذ القرارات التقنية الصحيحة.</p>
                 </div>
-                <div class="service-card hidden-element show-element">
+                <div class="service-card" data-aos="fade-up" data-aos-delay="700">
                     <i class="fas fa-cogs"></i>
                     <h3>الصيانة والتشغيل</h3>
                     <p>خدمات صيانة دورية لأجهزة الكمبيوتر والأنظمة لضمان أعلى أداء.</p>
@@ -142,74 +158,139 @@
     <section id="projects" class="projects">
         <div class="container">
             <div class="section-header">
-                <div class="section-badge">أعمالنا</div>
-                <h2 class="section-title hidden-element show-element">إنجازات نفتخر بها</h2>
+                <div class="section-badge" data-aos="fade-up">أعمالنا</div>
+                <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">إنجازات نفتخر بها</h2>
             </div>
-            <div class="project-info">
-                <h3>كاميرات المراقبة</h3>
-                <p>تركيب وصيانة أحدث أنظمة المراقبة الأمنية.</p>
+            
+            <!-- Portfolio Filters -->
+            <div class="portfolio-filters" data-aos="fade-up" data-aos-delay="150">
+                <button class="filter-btn active" data-filter="all">الكل</button>
+                <button class="filter-btn" data-filter="security">أنظمة أمنية</button>
+                <button class="filter-btn" data-filter="network">شبكات</button>
+                <button class="filter-btn" data-filter="communication">اتصالات وصوتيات</button>
             </div>
 
-            <a href="pages/attendance.html" class="project-card hidden-element show-element">
-                <div class="project-image">
-                    <img src="img/img_attendance_1.png" alt="أجهزة البصمة">
-                    <div class="overlay">
-                        <i class="fas fa-link"></i>
+            <div class="projects-grid">
+                <a href="pages/cameras.html" class="project-card" data-aos="zoom-in" data-aos-delay="100" data-category="security">
+                    <div class="project-image">
+                        <img src="img/img_cctv_1.png" alt="كاميرات المراقبة">
+                        <div class="overlay">
+                            <i class="fas fa-link"></i>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <h3>كاميرات المراقبة</h3>
+                        <p>تركيب وصيانة أحدث أنظمة المراقبة الأمنية.</p>
+                    </div>
+                </a>
+                
+                <a href="pages/attendance.html" class="project-card" data-aos="zoom-in" data-aos-delay="150" data-category="security">
+                    <div class="project-image">
+                        <img src="img/img_attendance_1.png" alt="أجهزة البصمة">
+                        <div class="overlay">
+                            <i class="fas fa-link"></i>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <h3>أجهزة الحضور والانصراف</h3>
+                        <p>أنظمة بصمة ووجه لضبط دوام الموظفين.</p>
+                    </div>
+                </a>
+                
+                <a href="pages/access.html" class="project-card" data-aos="zoom-in" data-aos-delay="200" data-category="security">
+                    <div class="project-image">
+                        <img src="img/img_access_1.png" alt="التحكم في الوصول">
+                        <div class="overlay">
+                            <i class="fas fa-link"></i>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <h3>أجهزة التحكم في الوصول</h3>
+                        <p>بوابات وأنظمة أمنية للتحكم في الدخول والخروج.</p>
+                    </div>
+                </a>
+                
+                <a href="pages/intercom.html" class="project-card" data-aos="zoom-in" data-aos-delay="250" data-category="communication">
+                    <div class="project-image">
+                        <img src="img/img_intercom_1.jpg" alt="السنترال والإنتركم">
+                        <div class="overlay">
+                            <i class="fas fa-link"></i>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <h3>السنترالات والإنتركم</h3>
+                        <p>حلول الاتصال الداخلي الحديثة للمنازل والشركات.</p>
+                    </div>
+                </a>
+                
+                <a href="pages/network.html" class="project-card" data-aos="zoom-in" data-aos-delay="300" data-category="network">
+                    <div class="project-image">
+                        <img src="img/img_network_1.png" alt="الشبكات">
+                        <div class="overlay">
+                            <i class="fas fa-link"></i>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <h3>أجهزة الشبكات</h3>
+                        <p>تأسيس وتمديد شبكات الحاسب والسيرفرات.</p>
+                    </div>
+                </a>
+                
+                <a href="pages/audio.html" class="project-card" data-aos="zoom-in" data-aos-delay="350" data-category="communication">
+                    <div class="project-image">
+                        <img src="img/img_audio_1.png" alt="الصوتيات">
+                        <div class="overlay">
+                            <i class="fas fa-link"></i>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <h3>الأنظمة الصوتية</h3>
+                        <p>تجهيز المساجد والقاعات بأنظمة صوت متطورة.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="testimonials">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-badge" data-aos="fade-up">شركاء النجاح</div>
+                <h2 class="section-title" data-aos="fade-up" data-aos-delay="100">ماذا يقول عملاؤنا؟</h2>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="quote-icon"><i class="fas fa-quote-right"></i></div>
+                    <p class="testimonial-text">"تعامل راقي واحترافية في الأداء. قاموا بتجهيز شبكة الشركة بالكامل وتركيب الكاميرات بأعلى معايير الجودة وفي وقت قياسي. شكراً لفريق PRIME NET."</p>
+                    <div class="testimonial-author">
+                        <div class="author-info">
+                            <h4>أحمد العبدالله</h4>
+                            <span>مدير تنفيذي شركة تجارية</span>
+                        </div>
                     </div>
                 </div>
-                <div class="project-info">
-                    <h3>أجهزة الحضور والانصراف</h3>
-                    <p>أنظمة بصمة ووجه لضبط دوام الموظفين.</p>
-                </div>
-            </a>
-            <a href="pages/access.html" class="project-card hidden-element show-element">
-                <div class="project-image">
-                    <img src="img/img_access_1.png" alt="التحكم في الوصول">
-                    <div class="overlay">
-                        <i class="fas fa-link"></i>
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="quote-icon"><i class="fas fa-quote-right"></i></div>
+                    <p class="testimonial-text">"خدمة ما بعد البيع لديهم استثنائية. كلما واجهتنا مشكلة في نظام البصمة أو السنترال، كان الدعم الفني متواجداً فوراً لحلها. أنصح بالتعامل معهم بشدة."</p>
+                    <div class="testimonial-author">
+                        <div class="author-info">
+                            <h4>خالد المطيري</h4>
+                            <span>مدير الموارد البشرية</span>
+                        </div>
                     </div>
                 </div>
-                <div class="project-info">
-                    <h3>أجهزة التحكم في الوصول</h3>
-                    <p>بوابات وأنظمة أمنية للتحكم في الدخول والخروج.</p>
-                </div>
-            </a>
-            <a href="pages/intercom.html" class="project-card hidden-element show-element">
-                <div class="project-image">
-                    <img src="img/img_intercom_1.jpg" alt="السنترال والإنتركم">
-                    <div class="overlay">
-                        <i class="fas fa-link"></i>
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="quote-icon"><i class="fas fa-quote-right"></i></div>
+                    <p class="testimonial-text">"كان لدينا مشروع متكامل لتركيب أنظمة تحكم في الدخول وأنظمة صوتية، وأنجزوا العمل باحترافية وتناسق عالي مع ديكور المكان."</p>
+                    <div class="testimonial-author">
+                        <div class="author-info">
+                            <h4>م. فيصل الغامدي</h4>
+                            <span>مالك مؤسسة مقاولات</span>
+                        </div>
                     </div>
                 </div>
-                <div class="project-info">
-                    <h3>السنترالات والإنتركم</h3>
-                    <p>حلول الاتصال الداخلي الحديثة للمنازل والشركات.</p>
-                </div>
-            </a>
-            <a href="pages/network.html" class="project-card hidden-element show-element">
-                <div class="project-image">
-                    <img src="img/img_network_1.png" alt="الشبكات">
-                    <div class="overlay">
-                        <i class="fas fa-link"></i>
-                    </div>
-                </div>
-                <div class="project-info">
-                    <h3>أجهزة الشبكات</h3>
-                    <p>تأسيس وتمديد شبكات الحاسب والسيرفرات.</p>
-                </div>
-            </a>
-            <a href="pages/audio.html" class="project-card hidden-element show-element">
-                <div class="project-image">
-                    <img src="img/img_audio_1.png" alt="الصوتيات">
-                    <div class="overlay">
-                        <i class="fas fa-link"></i>
-                    </div>
-                </div>
-                <div class="project-info">
-                    <h3>الأنظمة الصوتية</h3>
-                    <p>تجهيز المساجد والقاعات بأنظمة صوت متطورة.</p>
-                </div>
-            </a>
+            </div>
         </div>
     </section>
 
@@ -371,18 +452,18 @@
                 <defs>
                     <!-- تدرجات لونية مشابهة للصورة -->
                     <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#00f3ff"/>
-                        <stop offset="100%" stop-color="#0088ff"/>
+                        <stop offset="0%" stop-color="#00f3ff" />
+                        <stop offset="100%" stop-color="#0088ff" />
                     </linearGradient>
                     <linearGradient id="blueGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="#0055ff"/>
-                        <stop offset="100%" stop-color="#00f3ff"/>
+                        <stop offset="0%" stop-color="#0055ff" />
+                        <stop offset="100%" stop-color="#00f3ff" />
                     </linearGradient>
                 </defs>
 
                 <g class="glow-wrapper">
                     <!-- ================= مسارات الشبكة (Circuit Lines) ================= -->
-                    
+
                     <!-- المجموعة اليسرى (Cyan) -->
                     <g stroke="url(#cyanGrad)">
                         <path class="circuit-path" d="M 220 220 L 290 220 L 290 240 L 350 240" />
@@ -411,25 +492,25 @@
                     </g>
 
                     <!-- ================= النقاط (Nodes/Dots) ================= -->
-                    <circle class="node" cx="220" cy="220" r="5" fill="#070a13" stroke="#00f3ff" stroke-width="2"/>
-                    <circle class="node" cx="240" cy="235" r="4" fill="#070a13" stroke="#00f3ff" stroke-width="2"/>
-                    <circle class="node" cx="310" cy="180" r="5" fill="#070a13" stroke="#00f3ff" stroke-width="2"/>
-                    <circle class="node" cx="320" cy="160" r="4" fill="#070a13" stroke="#00f3ff" stroke-width="2"/>
-                    <circle class="node" cx="350" cy="110" r="4" fill="#070a13" stroke="#00f3ff" stroke-width="2"/>
+                    <circle class="node" cx="220" cy="220" r="5" fill="#070a13" stroke="#00f3ff" stroke-width="2" />
+                    <circle class="node" cx="240" cy="235" r="4" fill="#070a13" stroke="#00f3ff" stroke-width="2" />
+                    <circle class="node" cx="310" cy="180" r="5" fill="#070a13" stroke="#00f3ff" stroke-width="2" />
+                    <circle class="node" cx="320" cy="160" r="4" fill="#070a13" stroke="#00f3ff" stroke-width="2" />
+                    <circle class="node" cx="350" cy="110" r="4" fill="#070a13" stroke="#00f3ff" stroke-width="2" />
 
-                    <circle class="node" cx="380" cy="280" r="4" fill="#070a13" stroke="#00f3ff" stroke-width="2"/>
-                    <circle class="node" cx="395" cy="120" r="4" fill="#070a13" stroke="#00f3ff" stroke-width="2"/>
-                    <circle class="node" cx="410" cy="100" r="5" fill="#070a13" stroke="#00f3ff" stroke-width="2"/>
-                    <circle class="node" cx="425" cy="290" r="5" fill="#070a13" stroke="#0055ff" stroke-width="2"/>
-                    <circle class="node" cx="440" cy="130" r="4" fill="#070a13" stroke="#0055ff" stroke-width="2"/>
-                    
-                    <circle class="node" cx="590" cy="180" r="5" fill="#070a13" stroke="#00f3ff" stroke-width="2"/>
-                    <circle class="node" cx="550" cy="235" r="5" fill="#070a13" stroke="#0055ff" stroke-width="2"/>
-                    <circle class="node" cx="500" cy="250" r="4" fill="#070a13" stroke="#0055ff" stroke-width="2"/>
+                    <circle class="node" cx="380" cy="280" r="4" fill="#070a13" stroke="#00f3ff" stroke-width="2" />
+                    <circle class="node" cx="395" cy="120" r="4" fill="#070a13" stroke="#00f3ff" stroke-width="2" />
+                    <circle class="node" cx="410" cy="100" r="5" fill="#070a13" stroke="#00f3ff" stroke-width="2" />
+                    <circle class="node" cx="425" cy="290" r="5" fill="#070a13" stroke="#0055ff" stroke-width="2" />
+                    <circle class="node" cx="440" cy="130" r="4" fill="#070a13" stroke="#0055ff" stroke-width="2" />
+
+                    <circle class="node" cx="590" cy="180" r="5" fill="#070a13" stroke="#00f3ff" stroke-width="2" />
+                    <circle class="node" cx="550" cy="235" r="5" fill="#070a13" stroke="#0055ff" stroke-width="2" />
+                    <circle class="node" cx="500" cy="250" r="4" fill="#070a13" stroke="#0055ff" stroke-width="2" />
 
                     <!-- ================= النص (Typography) ================= -->
-                    <rect x="230" y="170" width="340" height="60" fill="transparent" rx="8"/>
-                    
+                    <rect x="230" y="170" width="340" height="60" fill="transparent" rx="8" />
+
                     <text x="400" y="215" text-anchor="middle" font-size="56" class="logo-text">
                         <tspan class="text-prime">PRIME</tspan>
                         <tspan class="text-net" dx="10">NET</tspan>
@@ -464,6 +545,12 @@
             <div class="message bot">
                 <div class="message-content">
                     مرحباً بك في PRIME NET 👋<br>أنا مساعدك الذكي، كيف يمكنني خدمتك اليوم؟
+                    <div class="chat-chips">
+                        <span class="chat-chip">طلب عرض سعر</span>
+                        <span class="chat-chip">أسعار كاميرات المراقبة</span>
+                        <span class="chat-chip">أجهزة البصمة</span>
+                        <span class="chat-chip">تواصل مع المبيعات</span>
+                    </div>
                 </div>
                 <div class="message-time">الآن</div>
             </div>
@@ -473,6 +560,44 @@
             <button id="sendMessage"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
+
+    <!-- Request Quote Modal -->
+    <div id="quoteModal" class="quote-modal-overlay">
+        <div class="quote-modal-content">
+            <span class="close-quote-modal">&times;</span>
+            <h2 style="color: var(--heading-color); margin-bottom: 10px;">طلب عرض سعر أو استشارة</h2>
+            <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 25px;">املأ النموذج وسنتواصل معك في أقرب وقت لتقديم أفضل الحلول المخصصة لك.</p>
+            <form id="quoteForm">
+                <div class="form-group" style="text-align: right; margin-bottom: 15px;">
+                    <label for="quoteName" style="color: #cbd5e1; display: block; margin-bottom: 8px;">الاسم او إسم الشركة</label>
+                    <input type="text" id="quoteName" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(15, 23, 42, 0.8); color: white;">
+                </div>
+                <div class="form-group" style="text-align: right; margin-bottom: 15px;">
+                    <label for="quotePhone" style="color: #cbd5e1; display: block; margin-bottom: 8px;">رقم الجوال</label>
+                    <input type="tel" id="quotePhone" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(15, 23, 42, 0.8); color: white;">
+                </div>
+                <div class="form-group" style="text-align: right; margin-bottom: 15px;">
+                    <label for="quoteService" style="color: #cbd5e1; display: block; margin-bottom: 8px;">نوع الخدمة المطلوبة</label>
+                    <select id="quoteService" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(15, 23, 42, 0.8); color: white;">
+                        <option value="">-- اختر الخدمة --</option>
+                        <option value="شبكات">حلول الشبكات والأنظمة</option>
+                        <option value="كاميرات">أنظمة المراقبة والكاميرات</option>
+                        <option value="سنترال">السنترالات والإنتركم</option>
+                        <option value="بصمة">أجهزة الحضور والانصراف (بصمة)</option>
+                        <option value="صوتيات">الأنظمة الصوتية</option>
+                        <option value="ويب">تصميم وتطوير المواقع</option>
+                        <option value="أخرى">خدمات أخرى</option>
+                    </select>
+                </div>
+                <div class="form-group" style="text-align: right; margin-bottom: 25px;">
+                    <label for="quoteDetails" style="color: #cbd5e1; display: block; margin-bottom: 8px;">تفاصيل إضافية (اختياري)</label>
+                    <textarea id="quoteDetails" rows="3" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(15, 23, 42, 0.8); color: white; resize: vertical;"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; display: flex; justify-content: center; align-items: center;">إرسال الطلب عبر واتساب <i class="fab fa-whatsapp" style="margin-right: 8px;"></i></button>
+            </form>
+        </div>
+    </div>
+
     <script src="js/script.js?v=15"></script>
 
 
@@ -493,6 +618,21 @@
 
     <!-- Export Modal -->
 
+    <!-- AOS JS Library & Initialization -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Init AOS (Animate on Scroll) AFTER the page loads and loader disappears
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                AOS.init({
+                    duration: 800,
+                    easing: 'ease-in-out',
+                    once: true,
+                    offset: 50
+                });
+            }, 3000); // 3s allows loader time to mostly finish
+        });
+    </script>
 </body>
 
 </html>
