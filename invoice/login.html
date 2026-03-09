@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRIME NET | تسجيل الدخول</title>
+    <meta name="description" content="تسجيل الدخول لنظام إصدار الفواتير وعروض الأسعار">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            font-family: 'Tajawal', sans-serif;
+            color: var(--text-color);
+        }
+
+        .login-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .login-logo {
+            margin-bottom: 24px;
+        }
+
+        .login-logo i {
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+        }
+
+        .login-logo h2 {
+            font-size: 24px;
+            color: var(--heading-color);
+            margin: 0;
+        }
+
+        .login-card p {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--heading-color);
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: rgba(15, 23, 42, 0.4);
+            color: var(--text-color);
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(56, 189, 248, 0.3);
+        }
+
+        .error-msg {
+            color: var(--danger-color);
+            background: rgba(239, 68, 68, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-card">
+        <div class="login-logo">
+            <img src="../img/logo.png" alt="PRIME NET" style="max-width: 200px; height: auto;">
+        </div>
+        <p>مرحباً بك مجدداً، يرجى تسجيل الدخول للمتابعة</p>
+
+        <div class="error-msg" id="loginError">اسم المستخدم أو كلمة المرور غير صحيحة</div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label for="username">اسم المستخدم</label>
+                <input type="text" id="username" class="form-control" placeholder="أدخل اسم المستخدم" required autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label for="password">كلمة المرور</label>
+                <input type="password" id="password" class="form-control" placeholder="أدخل كلمة المرور" required autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn-login">
+                تسجيل الدخول <i class="fas fa-sign-in-alt"></i>
+            </button>
+        </form>
+        <div style="margin-top: 20px; text-align: center;">
+            <a href="../index.html" style="color: var(--primary-color); text-decoration: none; font-size: 14px;"><i class="fas fa-arrow-right"></i> العودة للموقع الرئيسي</a>
+        </div>
+    </div>
+
+    <!-- Script for auth check -->
+    <script>
+        // If already logged in, redirect to dashboard
+        if (sessionStorage.getItem('pn_auth') || localStorage.getItem('pn_auth_persist')) {
+            window.location.href = 'index.html';
+        }
+
+        // Initialize default users if not exist
+        const defaultUsers = [
+            { id: 1, username: 'admin', password: '123', role: 'admin', name: 'المدير' },
+            { id: 2, username: 'user', password: '123', role: 'employee', name: 'الموظف' }
+        ];
+
+        if (!localStorage.getItem('pn_users')) {
+            localStorage.setItem('pn_users', JSON.stringify(defaultUsers));
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const userIn = document.getElementById('username').value.trim();
+            const passIn = document.getElementById('password').value;
+            const errorEl = document.getElementById('loginError');
+
+            const users = JSON.parse(localStorage.getItem('pn_users')) || [];
+            const user = users.find(u => u.username === userIn && u.password === passIn);
+
+            if (user) {
+                // Login success
+                const sessionData = { 
+                    id: user.id, 
+                    role: user.role, 
+                    name: user.name, 
+                    timestamp: new Date().getTime() 
+                };
+                sessionStorage.setItem('pn_auth', JSON.stringify(sessionData));
+                
+                // Allow persistent login using localStorage based on preference (optional, using session by default)
+                errorEl.style.display = 'none';
+                window.location.href = 'index.html';
+            } else {
+                // Login failed
+                errorEl.style.display = 'block';
+                // Shake animation for error
+                const card = document.querySelector('.login-card');
+                card.style.transform = 'translateX(-10px)';
+                setTimeout(() => card.style.transform = 'translateX(10px)', 50);
+                setTimeout(() => card.style.transform = 'translateX(-10px)', 100);
+                setTimeout(() => card.style.transform = 'translateX(10px)', 150);
+                setTimeout(() => card.style.transform = 'translateX(0)', 200);
+            }
+        }
+    </script>
+</body>
+
+</html>

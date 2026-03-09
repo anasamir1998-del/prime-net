@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRIME NET | نظام الفواتير وعروض الأسعار</title>
+    <meta name="description" content="نظام إصدار الفواتير وعروض الأسعار من شركة PRIME NET لتقنية المعلومات">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script>
+        // Check authentication before loading the page
+        if (!sessionStorage.getItem('pn_auth') && !localStorage.getItem('pn_auth_persist')) {
+            window.location.href = 'login.html';
+        }
+    </script>
+</head>
+
+<body>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Sidebar Backdrop (mobile) -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo" style="justify-content: center; margin-bottom: 15px;">
+                    <img src="../img/logo.png" alt="PRIME NET" style="max-width: 80%; height: auto;">
+                </div>
+                <p class="sidebar-subtitle">نظام إدارة الفواتير وعروض الأسعار</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">القائمة الرئيسية</div>
+                <a class="nav-item active" data-page="dashboard" onclick="navigateTo('dashboard')">
+                    <i class="fas fa-th-large"></i>
+                    <span>لوحة التحكم</span>
+                </a>
+
+                <div class="nav-section-label">المستندات</div>
+                <a class="nav-item" data-page="invoices" onclick="navigateTo('invoices')">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>الفواتير</span>
+                    <span class="badge" id="invoicesBadge">0</span>
+                </a>
+                <a class="nav-item" data-page="quotes" onclick="navigateTo('quotes')">
+                    <i class="fas fa-file-alt"></i>
+                    <span>عروض الأسعار</span>
+                    <span class="badge" id="quotesBadge">0</span>
+                </a>
+                <a class="nav-item" data-page="new-invoice" onclick="navigateTo('new-invoice')">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>فاتورة جديدة</span>
+                </a>
+                <a class="nav-item" data-page="new-quote" onclick="navigateTo('new-quote')">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>عرض سعر جديد</span>
+                </a>
+
+                <div class="nav-section-label">النظام</div>
+                <a class="nav-item" data-page="clients" onclick="navigateTo('clients')">
+                    <i class="fas fa-users"></i>
+                    <span>العملاء</span>
+                </a>
+                <a class="nav-item" data-page="products" onclick="navigateTo('products')">
+                    <i class="fas fa-box"></i>
+                    <span>المنتجات والخدمات</span>
+                </a>
+                <a class="nav-item admin-only" data-page="settings" onclick="navigateTo('settings')">
+                    <i class="fas fa-cog"></i>
+                    <span>الإعدادات</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="btn btn-ghost" onclick="logout()" style="width: 100%; color: var(--danger-color); margin-bottom: 10px; text-align: right; padding-right: 15px;">
+                    <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+                </button>
+                <p>© 2026 PRIME NET</p>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <!-- TOP BAR -->
+            <div class="top-bar">
+                <div class="top-bar-right">
+                    <button class="menu-toggle-btn" id="menuToggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h2 class="page-title" id="pageTitle">لوحة التحكم</h2>
+                </div>
+                <div class="top-bar-left">
+                    <div class="top-bar-date">
+                        <i class="far fa-calendar-alt"></i>
+                        <span id="currentDate"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGE CONTENT -->
+            <div class="page-content">
+
+                <!-- ===== DASHBOARD ===== -->
+                <div class="page-view active" id="page-dashboard">
+                    <div class="stats-row" id="statsRow"></div>
+
+                    <div class="quick-actions">
+                        <div class="quick-action-card" onclick="navigateTo('new-invoice')">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            <h4>فاتورة جديدة</h4>
+                            <p>إنشاء فاتورة ضريبية</p>
+                        </div>
+                        <div class="quick-action-card" onclick="navigateTo('new-quote')">
+                            <i class="fas fa-file-alt"></i>
+                            <h4>عرض سعر جديد</h4>
+                            <p>إنشاء عرض أسعار</p>
+                        </div>
+                        <div class="quick-action-card" onclick="navigateTo('clients')">
+                            <i class="fas fa-user-plus"></i>
+                            <h4>إضافة عميل</h4>
+                            <p>تسجيل عميل جديد</p>
+                        </div>
+                        <div class="quick-action-card" onclick="navigateTo('settings')">
+                            <i class="fas fa-cog"></i>
+                            <h4>الإعدادات</h4>
+                            <p>إعدادات الشركة</p>
+                        </div>
+                    </div>
+
+                    <div class="section-card">
+                        <div class="section-card-header">
+                            <h3><i class="fas fa-clock"></i> آخر العمليات</h3>
+                        </div>
+                        <div class="section-card-body" id="recentActivity">
+                            <div class="empty-state">
+                                <i class="fas fa-inbox"></i>
+                                <h3>لا توجد عمليات بعد</h3>
+                                <p>ابدأ بإنشاء فاتورة أو عرض سعر جديد</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== INVOICES LIST ===== -->
+                <div class="page-view" id="page-invoices">
+                    <div class="filter-bar">
+                        <div class="search-input-wrapper">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="بحث بالرقم أو اسم العميل..." id="invoiceSearch"
+                                oninput="renderInvoicesList()">
+                        </div>
+                        <select class="filter-select" id="invoiceStatusFilter" onchange="renderInvoicesList()">
+                            <option value="all">جميع الحالات</option>
+                            <option value="paid">مدفوعة</option>
+                            <option value="pending">معلقة</option>
+                            <option value="cancelled">ملغاة</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="navigateTo('new-invoice')">
+                            <i class="fas fa-plus"></i> فاتورة جديدة
+                        </button>
+                    </div>
+
+                    <div class="section-card">
+                        <div class="section-card-body table-container" id="invoicesTableContainer">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== QUOTES LIST ===== -->
+                <div class="page-view" id="page-quotes">
+                    <div class="filter-bar">
+                        <div class="search-input-wrapper">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="بحث بالرقم أو اسم العميل..." id="quoteSearch"
+                                oninput="renderQuotesList()">
+                        </div>
+                        <select class="filter-select" id="quoteStatusFilter" onchange="renderQuotesList()">
+                            <option value="all">جميع الحالات</option>
+                            <option value="quote">نشط</option>
+                            <option value="cancelled">ملغى</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="navigateTo('new-quote')">
+                            <i class="fas fa-plus"></i> عرض سعر جديد
+                        </button>
+                    </div>
+
+                    <div class="section-card">
+                        <div class="section-card-body table-container" id="quotesTableContainer">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== NEW INVOICE FORM ===== -->
+                <div class="page-view" id="page-new-invoice">
+                    <form id="invoiceForm" onsubmit="return false;">
+                        <div class="section-card">
+                            <div class="section-card-header">
+                                <h3><i class="fas fa-user"></i> بيانات العميل</h3>
+                            </div>
+                            <div class="section-card-body">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>اسم العميل / الشركة *</label>
+                                        <input type="text" class="form-control" id="invClientName" required
+                                            placeholder="أدخل اسم العميل">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>رقم الهاتف</label>
+                                        <input type="tel" class="form-control" id="invClientPhone"
+                                            placeholder="05xxxxxxxx">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>البريد الإلكتروني</label>
+                                        <input type="email" class="form-control" id="invClientEmail"
+                                            placeholder="email@example.com">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>العنوان</label>
+                                        <input type="text" class="form-control" id="invClientAddress"
+                                            placeholder="المدينة، الحي، الشارع">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>الرقم الضريبي للعميل</label>
+                                        <input type="text" class="form-control" id="invClientTax"
+                                            placeholder="رقم ضريبي (اختياري)">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>تاريخ الفاتورة</label>
+                                        <input type="date" class="form-control" id="invDate">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-card">
+                            <div class="section-card-header">
+                                <h3><i class="fas fa-list"></i> بنود الفاتورة</h3>
+                            </div>
+                            <div class="section-card-body">
+                                <div class="table-container">
+                                    <table class="items-table" id="invItemsTable">
+                                        <thead>
+                                            <tr>
+                                                <th class="col-num">#</th>
+                                                <th>الوصف</th>
+                                                <th style="width:100px">الكمية</th>
+                                                <th style="width:130px">السعر شامل الضريبة</th>
+                                                <th style="width:90px; text-align:center">ضريبة؟</th>
+                                                <th style="width:120px">الإجمالي</th>
+                                                <th style="width:50px"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="invItemsBody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <button type="button" class="add-item-btn" onclick="addInvoiceItem()">
+                                    <i class="fas fa-plus"></i> إضافة بند
+                                </button>
+
+                                <div class="totals-section">
+                                    <div class="totals-box">
+                                        <div class="totals-row">
+                                            <span>المجموع قبل الضريبة</span>
+                                            <span class="value" id="invSubtotal">0.00 ر.س</span>
+                                        </div>
+                                        <div class="totals-row">
+                                            <span>ضريبة القيمة المضافة (15%)</span>
+                                            <span class="value" id="invVat">0.00 ر.س</span>
+                                        </div>
+                                        <div class="totals-row grand-total">
+                                            <span>الإجمالي شامل الضريبة</span>
+                                            <span class="value" id="invTotal">0.00 ر.س</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-card">
+                            <div class="section-card-header">
+                                <h3><i class="fas fa-sticky-note"></i> ملاحظات</h3>
+                            </div>
+                            <div class="section-card-body">
+                                <div class="form-group">
+                                    <textarea class="form-control" id="invNotes" rows="3"
+                                        placeholder="ملاحظات إضافية (اختياري)..."></textarea>
+                                </div>
+                                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                                    <button type="button" class="btn btn-primary" onclick="saveInvoice()">
+                                        <i class="fas fa-save"></i> حفظ الفاتورة
+                                    </button>
+                                    <button type="button" class="btn btn-success" onclick="saveAndPreviewInvoice()">
+                                        <i class="fas fa-eye"></i> حفظ ومعاينة
+                                    </button>
+                                    <button type="button" class="btn btn-ghost" onclick="navigateTo('invoices')">
+                                        <i class="fas fa-times"></i> إلغاء
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- ===== NEW QUOTE FORM ===== -->
+                <div class="page-view" id="page-new-quote">
+                    <form id="quoteForm" onsubmit="return false;">
+                        <div class="section-card">
+                            <div class="section-card-header">
+                                <h3><i class="fas fa-user"></i> بيانات العميل</h3>
+                            </div>
+                            <div class="section-card-body">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>اسم العميل / الشركة *</label>
+                                        <input type="text" class="form-control" id="qClientName" required
+                                            placeholder="أدخل اسم العميل">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>رقم الهاتف</label>
+                                        <input type="tel" class="form-control" id="qClientPhone"
+                                            placeholder="05xxxxxxxx">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>البريد الإلكتروني</label>
+                                        <input type="email" class="form-control" id="qClientEmail"
+                                            placeholder="email@example.com">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>العنوان</label>
+                                        <input type="text" class="form-control" id="qClientAddress"
+                                            placeholder="المدينة، الحي، الشارع">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>تاريخ عرض السعر</label>
+                                        <input type="date" class="form-control" id="qDate">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>صالح حتى</label>
+                                        <input type="date" class="form-control" id="qValidUntil">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-card">
+                            <div class="section-card-header">
+                                <h3><i class="fas fa-list"></i> بنود عرض السعر</h3>
+                            </div>
+                            <div class="section-card-body">
+                                <div class="table-container">
+                                    <table class="items-table" id="qItemsTable">
+                                        <thead>
+                                            <tr>
+                                                <th class="col-num">#</th>
+                                                <th>الوصف</th>
+                                                <th style="width:100px">الكمية</th>
+                                                <th style="width:130px">السعر شامل الضريبة</th>
+                                                <th style="width:90px; text-align:center">ضريبة؟</th>
+                                                <th style="width:120px">الإجمالي</th>
+                                                <th style="width:50px"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="qItemsBody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <button type="button" class="add-item-btn" onclick="addQuoteItem()">
+                                    <i class="fas fa-plus"></i> إضافة بند
+                                </button>
+
+                                <div class="totals-section">
+                                    <div class="totals-box">
+                                        <div class="totals-row">
+                                            <span>المجموع قبل الضريبة</span>
+                                            <span class="value" id="qSubtotal">0.00 ر.س</span>
+                                        </div>
+                                        <div class="totals-row">
+                                            <span>ضريبة القيمة المضافة (15%)</span>
+                                            <span class="value" id="qVat">0.00 ر.س</span>
+                                        </div>
+                                        <div class="totals-row grand-total">
+                                            <span>الإجمالي شامل الضريبة</span>
+                                            <span class="value" id="qTotal">0.00 ر.س</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-card">
+                            <div class="section-card-header">
+                                <h3><i class="fas fa-sticky-note"></i> ملاحظات وشروط</h3>
+                            </div>
+                            <div class="section-card-body">
+                                <div class="form-group">
+                                    <textarea class="form-control" id="qNotes" rows="3"
+                                        placeholder="ملاحظات وشروط العرض (اختياري)..."></textarea>
+                                </div>
+                                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                                    <button type="button" class="btn btn-primary" onclick="saveQuote()">
+                                        <i class="fas fa-save"></i> حفظ عرض السعر
+                                    </button>
+                                    <button type="button" class="btn btn-success" onclick="saveAndPreviewQuote()">
+                                        <i class="fas fa-eye"></i> حفظ ومعاينة
+                                    </button>
+                                    <button type="button" class="btn btn-ghost" onclick="navigateTo('quotes')">
+                                        <i class="fas fa-times"></i> إلغاء
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- ===== CLIENTS ===== -->
+                <div class="page-view" id="page-clients">
+                    <div class="filter-bar">
+                        <div class="search-input-wrapper">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="بحث باسم العميل..." id="clientSearch"
+                                oninput="renderClientsList()">
+                        </div>
+                        <button class="btn btn-primary" onclick="showAddClientModal()">
+                            <i class="fas fa-plus"></i> عميل جديد
+                        </button>
+                    </div>
+
+                    <div class="section-card">
+                        <div class="section-card-body table-container" id="clientsTableContainer">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== PRODUCTS / SERVICES ===== -->
+                <div class="page-view" id="page-products">
+                    <div class="filter-bar">
+                        <div class="search-input-wrapper">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="بحث باسم المنتج..." id="productSearch"
+                                oninput="renderProductsList()">
+                        </div>
+                        <select class="filter-select" id="productTypeFilter" onchange="renderProductsList()">
+                            <option value="all">الكل</option>
+                            <option value="product">منتجات</option>
+                            <option value="service">خدمات</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="showAddProductModal()">
+                            <i class="fas fa-plus"></i> إضافة منتج/خدمة
+                        </button>
+                    </div>
+
+                    <div class="section-card">
+                        <div class="section-card-body table-container" id="productsTableContainer">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== SETTINGS ===== -->
+                <div class="page-view" id="page-settings">
+                    <div class="settings-grid">
+                        <div class="section-card">
+                            <div class="section-card-header">
+                                <h3><i class="fas fa-building"></i> بيانات الشركة</h3>
+                            </div>
+                            <div class="section-card-body">
+                                <div class="form-group">
+                                    <label>اسم الشركة</label>
+                                    <input type="text" class="form-control" id="settCompanyName"
+                                        placeholder="اسم الشركة">
+                                </div>
+                                <div class="form-group">
+                                    <label>الشعار النصي الإضافي</label>
+                                    <input type="text" class="form-control" id="settCompanyTagline"
+                                        placeholder="مثال: حلول تقنية متكاملة">
+                                </div>
+                                <div class="form-group">
+                                    <label>العنوان</label>
+                                    <input type="text" class="form-control" id="settCompanyAddress"
+                                        placeholder="عنوان الشركة">
+                                </div>
+                                <div class="form-group">
+                                    <label>رقم الهاتف</label>
+                                    <input type="text" class="form-control" id="settCompanyPhone"
+                                        placeholder="رقم الهاتف">
+                                </div>
+                                <div class="form-group">
+                                    <label>البريد الإلكتروني</label>
+                                    <input type="text" class="form-control" id="settCompanyEmail"
+                                        placeholder="البريد الإلكتروني">
+                                </div>
+                                <div class="form-group">
+                                    <label>الرقم الضريبي</label>
+                                    <input type="text" class="form-control" id="settCompanyTaxNumber"
+                                        placeholder="الرقم الضريبي">
+                                </div>
+                                <div class="form-group">
+                                    <label>رقم السجل التجاري</label>
+                                    <input type="text" class="form-control" id="settCompanyCR"
+                                        placeholder="رقم السجل التجاري">
+                                </div>
+                                <button class="btn btn-primary" onclick="saveSettings()">
+                                    <i class="fas fa-save"></i> حفظ الإعدادات
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="section-card">
+                            <div class="section-card-header">
+                                <h3><i class="fas fa-sliders-h"></i> إعدادات النظام</h3>
+                            </div>
+                            <div class="section-card-body">
+                                <div class="form-group">
+                                    <label>نسبة ضريبة القيمة المضافة (%)</label>
+                                    <input type="number" class="form-control" id="settVatRate" value="15" min="0"
+                                        max="100" step="0.5">
+                                </div>
+                                <div class="form-group">
+                                    <label>طريقة إدخال السعر</label>
+                                    <select class="form-control" id="settVatMode">
+                                        <option value="inclusive">السعر شامل الضريبة</option>
+                                        <option value="exclusive">السعر قبل الضريبة (يُضاف عليه)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>العملة</label>
+                                    <input type="text" class="form-control" id="settCurrency" value="ر.س"
+                                        placeholder="ر.س">
+                                </div>
+                                <div class="form-group">
+                                    <label>بادئة رقم الفاتورة</label>
+                                    <input type="text" class="form-control" id="settInvPrefix" value="INV-"
+                                        placeholder="INV-">
+                                </div>
+                                <div class="form-group">
+                                    <label>بادئة رقم عرض السعر</label>
+                                    <input type="text" class="form-control" id="settQuotePrefix" value="QT-"
+                                        placeholder="QT-">
+                                </div>
+                                <hr style="border-color: var(--border-color); margin: 16px 0;">
+                                <div class="form-group">
+                                    <label>ملاحظات أسفل الفاتورة (افتراضية)</label>
+                                    <textarea class="form-control" id="settDefaultNotes" rows="3"
+                                        placeholder="مثال: نشكركم على ثقتكم بنا..."></textarea>
+                                </div>
+                                <button class="btn btn-primary" onclick="saveSettings()">
+                                    <i class="fas fa-save"></i> حفظ الإعدادات
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-card" style="margin-top: 24px;">
+                        <div class="section-card-header">
+                            <h3><i class="fas fa-database"></i> إدارة البيانات</h3>
+                        </div>
+                        <div class="section-card-body" style="display:flex; gap:12px; flex-wrap:wrap;">
+                            <button class="btn btn-secondary" onclick="exportAllData()">
+                                <i class="fas fa-download"></i> تصدير جميع البيانات
+                            </button>
+                            <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">
+                                <i class="fas fa-upload"></i> استيراد البيانات
+                            </button>
+                            <input type="file" id="importFile" accept=".json" style="display:none"
+                                onchange="importAllData(event)">
+                            <button class="btn btn-danger" onclick="confirmClearData()">
+                                <i class="fas fa-trash-alt"></i> مسح جميع البيانات
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="section-card admin-only" style="margin-top: 24px;">
+                        <div class="section-card-header">
+                            <h3><i class="fas fa-users-cog"></i> إدارة المستخدمين والصلاحيات</h3>
+                        </div>
+                        <div class="section-card-body">
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>الاسم</th>
+                                            <th>اسم المستخدم</th>
+                                            <th>الصلاحية</th>
+                                            <th>إجراءات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="usersTableBody">
+                                        <!-- Users populated via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <button class="btn btn-primary" style="margin-top: 15px;" onclick="showAddUserModal()">
+                                <i class="fas fa-user-plus"></i> إضافة مستخدم جديد
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- PREVIEW OVERLAY -->
+    <div class="preview-overlay" id="previewOverlay">
+        <div class="preview-container">
+            <div class="preview-toolbar">
+                <span class="toolbar-title" id="previewTitle">معاينة</span>
+                <div class="toolbar-actions">
+                    <button class="btn btn-primary btn-sm" onclick="printPreview()">
+                        <i class="fas fa-print"></i> طباعة
+                    </button>
+                    <button class="btn btn-ghost btn-sm" onclick="closePreview()">
+                        <i class="fas fa-times"></i> إغلاق
+                    </button>
+                </div>
+            </div>
+            <div class="preview-body" id="previewBody">
+            </div>
+        </div>
+    </div>
+
+    <!-- CONFIRM MODAL -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-box">
+            <div class="modal-icon warning"><i class="fas fa-exclamation-triangle"></i></div>
+            <h3 id="confirmTitle">تأكيد</h3>
+            <p id="confirmMessage">هل أنت متأكد؟</p>
+            <div class="modal-actions">
+                <button class="btn btn-danger" id="confirmYes">نعم</button>
+                <button class="btn btn-ghost" onclick="closeConfirmModal()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CLIENT MODAL -->
+    <div class="modal-overlay" id="clientModal">
+        <div class="modal-box" style="text-align:right; max-width:500px;">
+            <h3 style="margin-bottom:20px; color:var(--heading-color);" id="clientModalTitle">إضافة عميل جديد</h3>
+            <div class="form-group">
+                <label>اسم العميل / الشركة *</label>
+                <input type="text" class="form-control" id="cmClientName" placeholder="اسم العميل">
+            </div>
+            <div class="form-group">
+                <label>رقم الهاتف</label>
+                <input type="tel" class="form-control" id="cmClientPhone" placeholder="05xxxxxxxx">
+            </div>
+            <div class="form-group">
+                <label>البريد الإلكتروني</label>
+                <input type="email" class="form-control" id="cmClientEmail" placeholder="email@example.com">
+            </div>
+            <div class="form-group">
+                <label>العنوان</label>
+                <input type="text" class="form-control" id="cmClientAddress" placeholder="العنوان">
+            </div>
+            <div class="form-group">
+                <label>الرقم الضريبي</label>
+                <input type="text" class="form-control" id="cmClientTax" placeholder="الرقم الضريبي (اختياري)">
+            </div>
+            <div class="modal-actions" style="justify-content:flex-start; margin-top:20px;">
+                <button class="btn btn-primary" id="cmSaveBtn" onclick="saveClient()">
+                    <i class="fas fa-save"></i> حفظ
+                </button>
+                <button class="btn btn-ghost" onclick="closeClientModal()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRODUCT MODAL -->
+    <div class="modal-overlay" id="productModal">
+        <div class="modal-box" style="text-align:right; max-width:500px;">
+            <h3 style="margin-bottom:20px; color:var(--heading-color);" id="productModalTitle">إضافة منتج / خدمة</h3>
+            <div class="form-group">
+                <label>اسم المنتج / الخدمة *</label>
+                <input type="text" class="form-control" id="pmName" placeholder="مثال: كاميرا مراقبة 5MP">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>النوع</label>
+                    <select class="form-control" id="pmType">
+                        <option value="product">منتج</option>
+                        <option value="service">خدمة</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>السعر</label>
+                    <input type="number" class="form-control" id="pmPrice" min="0" step="0.01" placeholder="0.00">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>الضريبة</label>
+                    <select class="form-control" id="pmTaxable">
+                        <option value="true">خاضع للضريبة</option>
+                        <option value="false">معفي من الضريبة</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>الوحدة (اختياري)</label>
+                    <input type="text" class="form-control" id="pmUnit" placeholder="مثال: قطعة، متر، ساعة">
+                </div>
+            </div>
+            <div class="modal-actions" style="justify-content:flex-start; margin-top:20px;">
+                <button class="btn btn-primary" onclick="saveProduct()">
+                    <i class="fas fa-save"></i> حفظ
+                </button>
+                <button class="btn btn-ghost" onclick="closeProductModal()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- USER MODAL -->
+    <div class="modal-overlay" id="userModal">
+        <div class="modal-box" style="text-align:right; max-width:500px;">
+            <h3 style="margin-bottom:20px; color:var(--heading-color);" id="userModalTitle">إضافة مستخدم جديد</h3>
+            <div class="form-group">
+                <label>الاسم الكامل *</label>
+                <input type="text" class="form-control" id="uName" placeholder="اسم المستخدم">
+            </div>
+            <div class="form-group">
+                <label>اسم الدخول (Username) *</label>
+                <input type="text" class="form-control" id="uUsername" placeholder="مثال: admin">
+            </div>
+            <div class="form-group">
+                <label>كلمة المرور *</label>
+                <input type="password" class="form-control" id="uPassword" placeholder="كلمة المرور">
+            </div>
+            <div class="form-group">
+                <label>الصلاحية</label>
+                <select class="form-control" id="uRole" onchange="togglePermissionsDiv()">
+                    <option value="employee">موظف (Employee)</option>
+                    <option value="admin">مدير (Admin)</option>
+                </select>
+            </div>
+            <div class="form-group" id="permissionsDiv" style="text-align: right;">
+                <label style="margin-bottom: 10px; display: block;">صلاحيات الوصول المخصصة:</label>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                        <input type="checkbox" id="permInvoices" checked> الفواتير
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                        <input type="checkbox" id="permQuotes" checked> عروض الأسعار
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                        <input type="checkbox" id="permClients" checked> العملاء
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-weight: normal;">
+                        <input type="checkbox" id="permProducts" checked> المنتجات والخدمات
+                    </label>
+                </div>
+            </div>
+            <div class="modal-actions" style="justify-content:flex-start; margin-top:20px;">
+                <button class="btn btn-primary" onclick="saveUser()">
+                    <i class="fas fa-save"></i> حفظ
+                </button>
+                <button class="btn btn-ghost" onclick="closeUserModal()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
