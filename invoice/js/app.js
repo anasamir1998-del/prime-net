@@ -1220,44 +1220,55 @@ function editClient(id) {
     document.getElementById('clientModal').classList.add('active');
 }
 
-function saveClient() {
+async function saveClient() {
     const name = document.getElementById('cmClientName').value.trim();
     if (!name) { showToast('يرجى إدخال اسم العميل', 'warning'); return; }
 
-    let clients = getData(KEYS.clients);
+    const clientData = {
+        name,
+        phone: document.getElementById('cmClientPhone').value.trim(),
+        email: document.getElementById('cmClientEmail').value.trim(),
+        address: document.getElementById('cmClientAddress').value.trim(),
+        taxNumber: document.getElementById('cmClientTax').value.trim(),
+    };
+
+    let clients = globalData.clients || [];
     if (editingClientId) {
-        const c = clients.find(c => c.id === editingClientId);
-        if (c) {
-            c.name = name;
-            c.phone = document.getElementById('cmClientPhone').value.trim();
-            c.email = document.getElementById('cmClientEmail').value.trim();
-            c.address = document.getElementById('cmClientAddress').value.trim();
-            c.tax = document.getElementById('cmClientTax').value.trim();
-        }
+        clientData.id = editingClientId;
     } else {
-        clients.push({
-            id: 'cl_' + Date.now(),
-            name,
-            phone: document.getElementById('cmClientPhone').value.trim(),
-            email: document.getElementById('cmClientEmail').value.trim(),
-            address: document.getElementById('cmClientAddress').value.trim(),
-            tax: document.getElementById('cmClientTax').value.trim(),
-        });
+        clientData.id = 'cl_' + Date.now();
     }
-    setData(KEYS.clients, clients);
-    closeClientModal();
-    showToast(editingClientId ? 'تم تحديث بيانات العميل' : 'تم إضافة العميل بنجاح', 'success');
-    editingClientId = null;
-    renderClientsList();
+
+    const res = await apiCall('clients.php', 'POST', clientData);
+    if (res && res.success) {
+        if (editingClientId) {
+            const idx = clients.findIndex(c => c.id === editingClientId);
+            if (idx >= 0) clients[idx] = clientData;
+        } else {
+            clients.push(clientData);
+        }
+        globalData.clients = clients;
+        closeClientModal();
+        showToast(editingClientId ? 'تم تحديث بيانات العميل' : 'تم إضافة العميل بنجاح', 'success');
+        editingClientId = null;
+        renderClientsList();
+    } else {
+        showToast('فشل حفظ العميل', 'error');
+    }
 }
 
-function deleteClient(id) {
-    showConfirm('حذف العميل', 'هل أنت متأكد من حذف هذا العميل؟', () => {
-        let clients = getData(KEYS.clients);
-        clients = clients.filter(c => c.id !== id);
-        setData(KEYS.clients, clients);
-        showToast('تم حذف العميل', 'success');
-        renderClientsList();
+async function deleteClient(id) {
+    showConfirm('حذف العميل', 'هل أنت متأكد من حذف هذا العميل؟', async () => {
+        const res = await apiCall('clients.php', 'DELETE', { id });
+        if (res && res.success) {
+            let clients = globalData.clients || [];
+            clients = clients.filter(c => c.id !== id);
+            globalData.clients = clients;
+            showToast('تم حذف العميل', 'success');
+            renderClientsList();
+        } else {
+            showToast('خطأ في حذف العميل', 'error');
+        }
     });
 }
 
@@ -1333,7 +1344,7 @@ function showEditProductModal(id) {
     document.getElementById('productModal').classList.add('active');
 }
 
-function saveProduct() {
+async function saveProduct() {
     const name = document.getElementById('pmName').value.trim();
     if (!name) { showToast('يرجى إدخال اسم المنتج/الخدمة', 'warning'); return; }
     const product = {
@@ -1344,27 +1355,38 @@ function saveProduct() {
         isTaxable: document.getElementById('pmTaxable').value === 'true',
         unit: document.getElementById('pmUnit').value.trim(),
     };
-    let products = getData(KEYS.products);
-    if (editingProductId) {
-        const idx = products.findIndex(p => p.id === editingProductId);
-        if (idx >= 0) products[idx] = product;
+
+    const res = await apiCall('products.php', 'POST', product);
+    if (res && res.success) {
+        let products = globalData.products || [];
+        if (editingProductId) {
+            const idx = products.findIndex(p => p.id === editingProductId);
+            if (idx >= 0) products[idx] = product;
+        } else {
+            products.push(product);
+        }
+        globalData.products = products;
+        closeProductModal();
+        showToast(editingProductId ? 'تم تحديث المنتج' : 'تم إضافة المنتج بنجاح', 'success');
+        editingProductId = null;
+        renderProductsList();
     } else {
-        products.push(product);
+        showToast('فشل حفظ المنتج', 'error');
     }
-    setData(KEYS.products, products);
-    closeProductModal();
-    showToast(editingProductId ? 'تم تحديث المنتج' : 'تم إضافة المنتج بنجاح', 'success');
-    editingProductId = null;
-    renderProductsList();
 }
 
-function deleteProduct(id) {
-    showConfirm('حذف المنتج', 'هل أنت متأكد من حذف هذا المنتج/الخدمة؟', () => {
-        let products = getData(KEYS.products);
-        products = products.filter(p => p.id !== id);
-        setData(KEYS.products, products);
-        showToast('تم حذف المنتج', 'success');
-        renderProductsList();
+async function deleteProduct(id) {
+    showConfirm('حذف المنتج', 'هل أنت متأكد من حذف هذا المنتج/الخدمة؟', async () => {
+        const res = await apiCall('products.php', 'DELETE', { id });
+        if (res && res.success) {
+            let products = globalData.products || [];
+            products = products.filter(p => p.id !== id);
+            globalData.products = products;
+            showToast('تم حذف المنتج', 'success');
+            renderProductsList();
+        } else {
+            showToast('خطأ في الحذف', 'error');
+        }
     });
 }
 
