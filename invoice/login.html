@@ -152,50 +152,56 @@
             window.location.href = 'index.html';
         }
 
-        // Initialize default users if not exist
-        const defaultUsers = [
-            { id: 1, username: 'admin', password: '123', role: 'admin', name: 'المدير' },
-            { id: 2, username: 'user', password: '123', role: 'employee', name: 'الموظف' }
-        ];
+    const API_BASE = 'api/';
 
-        if (!localStorage.getItem('pn_users')) {
-            localStorage.setItem('pn_users', JSON.stringify(defaultUsers));
-        }
+    async function handleLogin(e) {
+        e.preventDefault();
+        const userIn = document.getElementById('username').value.trim();
+        const passIn = document.getElementById('password').value;
+        const errorEl = document.getElementById('loginError');
 
-        function handleLogin(e) {
-            e.preventDefault();
-            const userIn = document.getElementById('username').value.trim();
-            const passIn = document.getElementById('password').value;
-            const errorEl = document.getElementById('loginError');
+        try {
+            const res = await fetch(`${API_BASE}auth.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: userIn, password: passIn })
+            });
 
-            const users = JSON.parse(localStorage.getItem('pn_users')) || [];
-            const user = users.find(u => u.username === userIn && u.password === passIn);
+            const data = await res.json();
 
-            if (user) {
+            if (data.success && data.user) {
                 // Login success
                 const sessionData = { 
-                    id: user.id, 
-                    role: user.role, 
-                    name: user.name, 
+                    id: data.user.id, 
+                    username: data.user.username,
+                    role: data.user.role, 
+                    name: data.user.name,
+                    permissions: data.user.permissions,
                     timestamp: new Date().getTime() 
                 };
                 sessionStorage.setItem('pn_auth', JSON.stringify(sessionData));
                 
-                // Allow persistent login using localStorage based on preference (optional, using session by default)
                 errorEl.style.display = 'none';
                 window.location.href = 'index.html';
             } else {
-                // Login failed
-                errorEl.style.display = 'block';
-                // Shake animation for error
-                const card = document.querySelector('.login-card');
-                card.style.transform = 'translateX(-10px)';
-                setTimeout(() => card.style.transform = 'translateX(10px)', 50);
-                setTimeout(() => card.style.transform = 'translateX(-10px)', 100);
-                setTimeout(() => card.style.transform = 'translateX(10px)', 150);
-                setTimeout(() => card.style.transform = 'translateX(0)', 200);
+                showError(errorEl);
             }
+        } catch (error) {
+            console.error('Login error:', error);
+            showError(errorEl);
         }
+    }
+
+    function showError(errorEl) {
+        errorEl.style.display = 'block';
+        // Shake animation for error
+        const card = document.querySelector('.login-card');
+        card.style.transform = 'translateX(-10px)';
+        setTimeout(() => card.style.transform = 'translateX(10px)', 50);
+        setTimeout(() => card.style.transform = 'translateX(-10px)', 100);
+        setTimeout(() => card.style.transform = 'translateX(10px)', 150);
+        setTimeout(() => card.style.transform = 'translateX(0)', 200);
+    }
     </script>
 </body>
 

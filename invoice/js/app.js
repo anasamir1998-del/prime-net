@@ -4,22 +4,77 @@
    ============================================ */
 
 // ============ DATA STORAGE ============
-const KEYS = {
-    invoices: 'pn_invoices',
-    quotes: 'pn_quotes',
-    clients: 'pn_clients',
-    products: 'pn_products',
-    settings: 'pn_settings',
-    counters: 'pn_counters'
+// Now using Global Memory initialized via API
+let globalData = {
+    invoices: [],
+    quotes: [],
+    clients: [],
+    products: [],
+    users: [],
+    settings: {},
+    counters: { invoice: 1000, quote: 1000 }
 };
 
+const API_BASE = 'api/';
+
+async function apiCall(endpoint, method = 'GET', body = null) {
+    const options = { method, headers: {} };
+    if (body) {
+        options.headers['Content-Type'] = 'application/json';
+        options.body = JSON.stringify(body);
+    }
+    // Append a timestamp to bypass cache on GET requests
+    const url = method === 'GET' ? `${API_BASE}${endpoint}?_t=${new Date().getTime()}` : `${API_BASE}${endpoint}`;
+    
+    try {
+        const res = await fetch(url, options);
+        if (!res.ok) throw new Error('API Error');
+        return await res.json();
+    } catch (e) {
+        console.error(`API config failed for ${endpoint}`, e);
+        return null;
+    }
+}
+
+async function initData() {
+    // Show spinner or something if needed
+    
+    // Fetch all data in parallel
+    const [invs, qts, clts, prods, usrs, sets] = await Promise.all([
+        apiCall('invoices.php'),
+        apiCall('quotes.php'),
+        apiCall('clients.php'),
+        apiCall('products.php'),
+        apiCall('users.php'),
+        apiCall('settings.php')
+    ]);
+    
+    if (invs) globalData.invoices = invs;
+    if (qts) globalData.quotes = qts;
+    if (clts) globalData.clients = clts;
+    if (prods) globalData.products = prods;
+    if (usrs) globalData.users = usrs;
+    
+    if (sets) {
+        if (sets.settings && Object.keys(sets.settings).length > 0) globalData.settings = sets.settings;
+        if (sets.counters && Object.keys(sets.counters).length > 0) globalData.counters = sets.counters;
+    }
+}
+
 function getData(key) {
-    try { return JSON.parse(localStorage.getItem(key)) || []; }
-    catch { return []; }
+    if(key === KEYS.invoices) return globalData.invoices;
+    if(key === KEYS.quotes) return globalData.quotes;
+    if(key === KEYS.clients) return globalData.clients;
+    if(key === KEYS.products) return globalData.products;
+    return [];
 }
 
 function setData(key, data) {
-    localStorage.setItem(key, JSON.stringify(data));
+    // Kept for backward compatibility, but actual saving happens via API now
+    if(key === KEYS.invoices) globalData.invoices = data;
+    if(key === KEYS.quotes) globalData.quotes = data;
+    if(key === KEYS.clients) globalData.clients = data;
+    if(key === KEYS.products) globalData.products = data;
 }
 
 function getSettings() {
@@ -38,31 +93,36 @@ function getSettings() {
         defaultNotes: 'نشكركم على ثقتكم بنا. الأسعار لا تشمل أي أعمال إضافية غير مذكورة في العرض.',
         vatMode: 'inclusive',
     };
-    const saved = localStorage.getItem(KEYS.settings);
-    if (saved) {
-        return { ...defaults, ...JSON.parse(saved) };
-    }
-    return defaults;
+    return { ...defaults, ...globalData.settings };
 }
 
 function getCounters() {
-    const saved = localStorage.getItem(KEYS.counters);
-    if (saved) return JSON.parse(saved);
-    return { invoice: 1000, quote: 1000 };
+    return globalData.counters;
 }
 
-function nextInvoiceNumber() {
+// Ensure async setting saves
+async function saveSettingsWrapper(settings) {
+    globalData.settings = settings;
+    await apiCall('settings.php', 'POST', { settings });
+}
+
+async function saveCountersWrapper(counters) {
+    globalData.counters = counters;
+    await apiCall('settings.php', 'POST', { counters });
+}
+
+async function nextInvoiceNumber() {
     const c = getCounters();
     c.invoice++;
-    setData(KEYS.counters, c);
+    await saveCountersWrapper(c);
     const s = getSettings();
     return s.invPrefix + String(c.invoice).padStart(4, '0');
 }
 
-function nextQuoteNumber() {
+async function nextQuoteNumber() {
     const c = getCounters();
     c.quote++;
-    setData(KEYS.counters, c);
+    await saveCountersWrapper(c);
     const s = getSettings();
     return s.quotePrefix + String(c.quote).padStart(4, '0');
 }
@@ -388,7 +448,7 @@ function resetInvoiceForm() {
     renderInvoiceItems();
 }
 
-function collectInvoiceData() {
+async function collectInvoiceData() {
     const name = document.getElementById('invClientName').value.trim();
     if (!name) {
         showToast('يرجى إدخال اسم العميل', 'warning');
@@ -420,9 +480,11 @@ function collectInvoiceData() {
         }
     });
 
+    const invNum = editingInvoiceId ? (getData(KEYS.invoices).find(i => i.id === editingInvoiceId)?.number || await nextInvoiceNumber()) : await nextInvoiceNumber();
+
     return {
         id: editingInvoiceId || 'inv_' + Date.now(),
-        number: editingInvoiceId ? (getData(KEYS.invoices).find(i => i.id === editingInvoiceId)?.number || nextInvoiceNumber()) : nextInvoiceNumber(),
+        number: invNum,
         clientName: name,
         clientPhone: document.getElementById('invClientPhone').value.trim(),
         clientEmail: document.getElementById('invClientEmail').value.trim(),
@@ -441,8 +503,8 @@ function collectInvoiceData() {
     };
 }
 
-function saveInvoice() {
-    const data = collectInvoiceData();
+async function saveInvoice() {
+    const data = await collectInvoiceData();
     if (!data) return;
 
     let invoices = getData(KEYS.invoices);
@@ -452,18 +514,21 @@ function saveInvoice() {
     } else {
         invoices.push(data);
     }
-    setData(KEYS.invoices, invoices);
+    
+    const res = await apiCall('invoices.php', 'POST', data);
+    if (res && res.success) {
+        autoSaveClient(data.clientName, data.clientPhone, data.clientEmail, data.clientAddress, data.clientTax);
 
-    // Auto-save client
-    autoSaveClient(data.clientName, data.clientPhone, data.clientEmail, data.clientAddress, data.clientTax);
-
-    showToast(editingInvoiceId ? 'تم تحديث الفاتورة بنجاح' : 'تم حفظ الفاتورة بنجاح', 'success');
-    editingInvoiceId = null;
-    navigateTo('invoices');
+        showToast(editingInvoiceId ? 'تم تحديث الفاتورة بنجاح' : 'تم حفظ الفاتورة بنجاح', 'success');
+        editingInvoiceId = null;
+        navigateTo('invoices');
+    } else {
+        showToast('حدث خطأ أثناء حفظ الفاتورة', 'error');
+    }
 }
 
-function saveAndPreviewInvoice() {
-    const data = collectInvoiceData();
+async function saveAndPreviewInvoice() {
+    const data = await collectInvoiceData();
     if (!data) return;
 
     let invoices = getData(KEYS.invoices);
@@ -473,12 +538,17 @@ function saveAndPreviewInvoice() {
     } else {
         invoices.push(data);
     }
-    setData(KEYS.invoices, invoices);
-    autoSaveClient(data.clientName, data.clientPhone, data.clientEmail, data.clientAddress, data.clientTax);
 
-    showToast('تم حفظ الفاتورة بنجاح', 'success');
-    editingInvoiceId = null;
-    previewDoc('invoice', data.id);
+    const res = await apiCall('invoices.php', 'POST', data);
+    if (res && res.success) {
+        autoSaveClient(data.clientName, data.clientPhone, data.clientEmail, data.clientAddress, data.clientTax);
+
+        showToast('تم حفظ الفاتورة بنجاح', 'success');
+        editingInvoiceId = null;
+        previewDoc('invoice', data.id);
+    } else {
+        showToast('حدث خطأ أثناء حفظ الفاتورة', 'error');
+    }
 }
 
 // ============ QUOTE ITEMS ============
@@ -559,7 +629,7 @@ function resetQuoteForm() {
     renderQuoteItems();
 }
 
-function collectQuoteData() {
+async function collectQuoteData() {
     const name = document.getElementById('qClientName').value.trim();
     if (!name) {
         showToast('يرجى إدخال اسم العميل', 'warning');
@@ -591,9 +661,11 @@ function collectQuoteData() {
         }
     });
 
+    const qNum = editingQuoteId ? (getData(KEYS.quotes).find(q => q.id === editingQuoteId)?.number || await nextQuoteNumber()) : await nextQuoteNumber();
+
     return {
         id: editingQuoteId || 'qt_' + Date.now(),
-        number: editingQuoteId ? (getData(KEYS.quotes).find(q => q.id === editingQuoteId)?.number || nextQuoteNumber()) : nextQuoteNumber(),
+        number: qNum,
         clientName: name,
         clientPhone: document.getElementById('qClientPhone').value.trim(),
         clientEmail: document.getElementById('qClientEmail').value.trim(),
@@ -612,8 +684,8 @@ function collectQuoteData() {
     };
 }
 
-function saveQuote() {
-    const data = collectQuoteData();
+async function saveQuote() {
+    const data = await collectQuoteData();
     if (!data) return;
 
     let quotes = getData(KEYS.quotes);
@@ -623,16 +695,21 @@ function saveQuote() {
     } else {
         quotes.push(data);
     }
-    setData(KEYS.quotes, quotes);
-    autoSaveClient(data.clientName, data.clientPhone, data.clientEmail, data.clientAddress, '');
+    
+    const res = await apiCall('quotes.php', 'POST', data);
+    if (res && res.success) {
+        autoSaveClient(data.clientName, data.clientPhone, data.clientEmail, data.clientAddress, '');
 
-    showToast(editingQuoteId ? 'تم تحديث عرض السعر بنجاح' : 'تم حفظ عرض السعر بنجاح', 'success');
-    editingQuoteId = null;
-    navigateTo('quotes');
+        showToast(editingQuoteId ? 'تم تحديث عرض السعر بنجاح' : 'تم حفظ عرض السعر بنجاح', 'success');
+        editingQuoteId = null;
+        navigateTo('quotes');
+    } else {
+        showToast('حدث خطأ أثناء حفظ عرض السعر', 'error');
+    }
 }
 
-function saveAndPreviewQuote() {
-    const data = collectQuoteData();
+async function saveAndPreviewQuote() {
+    const data = await collectQuoteData();
     if (!data) return;
 
     let quotes = getData(KEYS.quotes);
@@ -642,12 +719,17 @@ function saveAndPreviewQuote() {
     } else {
         quotes.push(data);
     }
-    setData(KEYS.quotes, quotes);
-    autoSaveClient(data.clientName, data.clientPhone, data.clientEmail, data.clientAddress, '');
+    
+    const res = await apiCall('quotes.php', 'POST', data);
+    if (res && res.success) {
+        autoSaveClient(data.clientName, data.clientPhone, data.clientEmail, data.clientAddress, '');
 
-    showToast('تم حفظ عرض السعر بنجاح', 'success');
-    editingQuoteId = null;
-    previewDoc('quote', data.id);
+        showToast('تم حفظ عرض السعر بنجاح', 'success');
+        editingQuoteId = null;
+        previewDoc('quote', data.id);
+    } else {
+        showToast('حدث خطأ أثناء حفظ عرض السعر', 'error');
+    }
 }
 
 // ============ INVOICES LIST ============
@@ -729,22 +811,28 @@ function editInvoice(id) {
     renderInvoiceItems();
 }
 
-function toggleInvoiceStatus(id) {
+async function toggleInvoiceStatus(id) {
     let invoices = getData(KEYS.invoices);
     const inv = invoices.find(i => i.id === id);
     if (!inv) return;
     inv.status = inv.status === 'paid' ? 'pending' : 'paid';
     inv.updatedAt = new Date().toISOString();
-    setData(KEYS.invoices, invoices);
+    
+    // Save to server
+    await apiCall('invoices.php', 'POST', inv);
+    
     showToast(inv.status === 'paid' ? 'تم تأكيد الدفع' : 'تم إلغاء الدفع', 'success');
     renderInvoicesList();
 }
 
 function deleteInvoice(id) {
-    showConfirm('حذف الفاتورة', 'هل أنت متأكد من حذف هذه الفاتورة؟ لا يمكن التراجع عن هذا الإجراء.', () => {
+    showConfirm('حذف الفاتورة', 'هل أنت متأكد من حذف هذه الفاتورة؟ لا يمكن التراجع عن هذا الإجراء.', async () => {
         let invoices = getData(KEYS.invoices);
         invoices = invoices.filter(i => i.id !== id);
-        setData(KEYS.invoices, invoices);
+        globalData.invoices = invoices;
+        
+        await apiCall('invoices.php', 'DELETE', { id });
+        
         showToast('تم حذف الفاتورة', 'success');
         renderInvoicesList();
     });
@@ -830,14 +918,16 @@ function editQuote(id) {
 }
 
 function convertToInvoice(quoteId) {
-    showConfirm('تحويل إلى فاتورة', 'هل تريد تحويل عرض السعر هذا إلى فاتورة ضريبية؟', () => {
+    showConfirm('تحويل إلى فاتورة', 'هل تريد تحويل عرض السعر هذا إلى فاتورة ضريبية؟', async () => {
         const quotes = getData(KEYS.quotes);
         const q = quotes.find(q => q.id === quoteId);
         if (!q) return;
 
+        const invNum = await nextInvoiceNumber();
+
         const invoiceData = {
             id: 'inv_' + Date.now(),
-            number: nextInvoiceNumber(),
+            number: invNum,
             clientName: q.clientName,
             clientPhone: q.clientPhone || '',
             clientEmail: q.clientEmail || '',
@@ -858,7 +948,9 @@ function convertToInvoice(quoteId) {
 
         let invoices = getData(KEYS.invoices);
         invoices.push(invoiceData);
-        setData(KEYS.invoices, invoices);
+        globalData.invoices = invoices;
+        
+        await apiCall('invoices.php', 'POST', invoiceData);
 
         showToast(`تم تحويل عرض السعر ${q.number} إلى فاتورة ${invoiceData.number}`, 'success');
         navigateTo('invoices');
@@ -1470,7 +1562,7 @@ function togglePermissionsDiv() {
 let editingUserId = null;
 
 function renderUsersList() {
-    const users = JSON.parse(localStorage.getItem('pn_users')) || [];
+    const users = globalData.users || [];
     const tbody = document.getElementById('usersTableBody');
     if (!tbody) return;
 
@@ -1487,7 +1579,7 @@ function renderUsersList() {
             <td>
                 <div class="actions-cell">
                     <button class="btn-icon" title="تعديل" onclick="editUser(${u.id})"><i class="fas fa-edit"></i></button>
-                    <button class="btn-icon" title="حذف" onclick="deleteUser(${u.id})" ${u.username === 'admin' ? 'disabled style="opacity:0.3;cursor:not-allowed;"' : ''}><i class="fas fa-trash"></i></button>
+                    <button class="btn-icon" title="حذف" onclick="deleteUser(${u.id})" ${(u.username.toLowerCase() === 'admin' || u.username.toLowerCase() === 'samir') ? 'disabled style="opacity:0.3;cursor:not-allowed;"' : ''}><i class="fas fa-trash"></i></button>
                 </div>
             </td>
         </tr>
@@ -1518,9 +1610,22 @@ function closeUserModal() {
 }
 
 function editUser(id) {
-    const users = JSON.parse(localStorage.getItem('pn_users')) || [];
+    const users = globalData.users || [];
     const user = users.find(u => u.id === id);
     if (!user) return;
+
+    const currentUser = JSON.parse(sessionStorage.getItem('pn_auth')) || {};
+    const currentUsername = currentUser.username ? currentUser.username.toLowerCase() : '';
+    
+    // Protect main admins from being edited by others
+    if (user.username.toLowerCase() === 'admin' && currentUsername !== 'admin') {
+        showToast('عذراً! غير مصرح لك بتعديل بيانات المدير الأساسي.', 'error');
+        return;
+    }
+    if (user.username.toLowerCase() === 'samir' && currentUsername !== 'samir') {
+        showToast('عذراً! غير مصرح لك بتعديل بيانات مدير النظام (Samir).', 'error');
+        return;
+    }
 
     editingUserId = id;
     document.getElementById('userModalTitle').textContent = 'تعديل بيانات المستخدم';
@@ -1536,8 +1641,8 @@ function editUser(id) {
     document.getElementById('permClients').checked = perms.clients;
     document.getElementById('permProducts').checked = perms.products;
     
-    // Prevent changing role of the main admin account
-    if (user.username === 'admin') {
+    // Prevent changing role of the main admin accounts
+    if (user.username.toLowerCase() === 'admin' || user.username.toLowerCase() === 'samir') {
         document.getElementById('uRole').disabled = true;
     } else {
         document.getElementById('uRole').disabled = false;
@@ -1547,7 +1652,7 @@ function editUser(id) {
     document.getElementById('userModal').classList.add('active');
 }
 
-function saveUser() {
+async function saveUser() {
     const name = document.getElementById('uName').value.trim();
     const username = document.getElementById('uUsername').value.trim();
     const password = document.getElementById('uPassword').value.trim();
@@ -1566,7 +1671,7 @@ function saveUser() {
         return;
     }
 
-    let users = JSON.parse(localStorage.getItem('pn_users')) || [];
+    let users = globalData.users || [];
 
     // Check username uniqueness
     const exists = users.find(u => u.username === username && u.id !== editingUserId);
@@ -1575,57 +1680,55 @@ function saveUser() {
         return;
     }
 
-    if (editingUserId) {
-        const idx = users.findIndex(u => u.id === editingUserId);
-        if (idx !== -1) {
-            users[idx].name = name;
-            users[idx].username = username;
-            users[idx].password = password;
-            // Only update role if it's not the main admin
-            if (users[idx].username !== 'admin') {
-                users[idx].role = role;
-                users[idx].permissions = permissions;
-            }
-            showToast('تم تحديث بيانات المستخدم بنجاح', 'success');
-        }
-    } else {
-        const newId = users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1;
-        users.push({
-            id: newId,
-            name,
-            username,
-            password,
-            role,
-            permissions
-        });
-        showToast('تمت إضافة المستخدم بنجاح', 'success');
-    }
+    const payload = {
+        name,
+        username,
+        role,
+        permissions
+    };
+    if (editingUserId) payload.id = editingUserId;
+    if (password) payload.password = password;
 
-    localStorage.setItem('pn_users', JSON.stringify(users));
-    closeUserModal();
-    renderUsersList();
+    const res = await apiCall('users.php', 'POST', payload);
+    if (res && res.success) {
+        showToast(editingUserId ? 'تم تحديث بيانات المستخدم بنجاح' : 'تمت إضافة المستخدم بنجاح', 'success');
+        
+        // Refresh users
+        const updatedUsers = await apiCall('users.php', 'GET');
+        if (updatedUsers) globalData.users = updatedUsers;
+
+        closeUserModal();
+        renderUsersList();
+    } else {
+        showToast('فشل حفظ المستخدم', 'error');
+    }
 }
 
-function deleteUser(id) {
-    let users = JSON.parse(localStorage.getItem('pn_users')) || [];
+async function deleteUser(id) {
+    let users = globalData.users || [];
     const user = users.find(u => u.id === id);
     
-    if (user && user.username === 'admin') {
-        showToast('لا يمكن حذف حساب المدير الأساسي', 'error');
+    if (user && (user.username.toLowerCase() === 'admin' || user.username.toLowerCase() === 'samir')) {
+        showToast('لا يمكن حذف حساب إداري أساسي', 'error');
         return;
     }
 
-    showConfirm('حذف المستخدم', 'هل أنت متأكد من حذف هذا المستخدم؟', () => {
-        users = users.filter(u => u.id !== id);
-        localStorage.setItem('pn_users', JSON.stringify(users));
-        showToast('تم حذف المستخدم', 'success');
-        renderUsersList();
+    showConfirm('حذف المستخدم', 'هل أنت متأكد من حذف هذا المستخدم؟', async () => {
+        const res = await apiCall('users.php', 'DELETE', { id });
+        if (res && res.success) {
+            users = users.filter(u => u.id !== id);
+            globalData.users = users;
+            showToast('تم حذف المستخدم', 'success');
+            renderUsersList();
+        } else {
+            showToast('خطأ في الحذف', 'error');
+        }
     });
 }
 
 
 // ============ INITIALIZATION ============
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
     // Set current date in top bar
     document.getElementById('currentDate').textContent = new Date().toLocaleDateString('ar-SA', {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -1657,8 +1760,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Init dashboard
+    // Ensure user is verified first
     checkPermissions();
+
+    // Fetch master API data
+    await initData();
+
+    // Load initial views
     if (document.getElementById('usersTableBody')) {
         renderUsersList();
     }
