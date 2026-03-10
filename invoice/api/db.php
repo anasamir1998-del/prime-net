@@ -9,11 +9,11 @@ if ($_SERVER['SERVER_NAME'] === 'localhost' || $_SERVER['SERVER_NAME'] === '127.
     define('DB_PASS', '');
     define('DB_NAME', 'prime_net_invoice');
 } else {
-    // Hostinger Production settings - REPLACE THESE WITH ACTUAL HOSTINGER DETAILS
+    // Hostinger Production settings
     define('DB_HOST', 'localhost');
-    define('DB_USER', 'your_db_user');
-    define('DB_PASS', 'your_db_password');
-    define('DB_NAME', 'your_db_name');
+    define('DB_USER', 'u127645123_prime');
+    define('DB_PASS', 'Ss371998');
+    define('DB_NAME', 'u127645123_DB_Prime_N');
 }
 
 // 2. Establish Connection
