@@ -2,29 +2,12 @@
 // db_setup.php - Run this once to create the database tables
 header('Content-Type: text/html; charset=utf-8');
 
-// Replace these with Hostinger DB details when deploying
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'prime_net_invoice');
+require_once 'db.php';
 
-// Create connection
-$conn = new mysqli(DB_HOST, DB_USER, DB_PASS);
+// db.php already connects to the database, so we use its $conn object.
+// Hostinger databases are created via the control panel, so we skip CREATE DATABASE.
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
 
-// Create database if not exists
-$sql = "CREATE DATABASE IF NOT EXISTS " . DB_NAME . " CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
-if ($conn->query($sql) === TRUE) {
-    echo "Database created or already exists.<br>";
-} else {
-    die("Error creating database: " . $conn->error);
-}
-
-// Select the database
-$conn->select_db(DB_NAME);
 
 // 1. Users table
 $sql_users = "CREATE TABLE IF NOT EXISTS users (
